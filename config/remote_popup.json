@@ -1,20 +1,20 @@
 {
-  "id": "welcome_1_2_15",
-  "enabled": false,
-  "title": "🎉 Üdvözlünk a Pergamenben!",
-  "message": "A legújabb verzióban elérhető a megújult dinamikus alkalmazásikon-váltó natív kezdőképernyő támogatással, valamint a javított bejelentkezési és értesítési rendszer.\n\nJó tanulást kíván a Pergamen csapata!",
-  "tag": "v1.2.15 BETA",
+  "id": "update_v1_2_16",
+  "enabled": true,
+  "title": "🎉 Új Pergamen verzió elérhető!",
+  "message": "Megjelent a Pergamen v1.2.16!\n\n• Új távoli értesítések és in-app pop-up rendszer\n• Javított kezdőképernyő ikonváltás iOS és Android rendszereken\n• Hibajavítások és sebességoptimalizálás",
+  "tag": "v1.2.16 BETA",
   "platform": "all",
   "force_update": false,
   "buttons": [
     {
-      "text": "Weboldal",
+      "text": "Frissítés letöltése",
       "action": "open_url",
-      "url": "https://materadetzky.github.io/pergamen-web",
-      "primary": true
+      "primary": true,
+      "url": "https://github.com/materadetzky/pergamen/releases/latest"
     },
     {
-      "text": "Rendben",
+      "text": "Később",
       "action": "dismiss",
       "primary": false
     }
