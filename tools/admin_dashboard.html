@@ -3,298 +3,668 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pergamen Remote Control Dashboard</title>
+  <title>Pergamen Vezérlőpult — Távoli Pop-up & Értesítés Kezelő</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="https://materadetzky.github.io/pergamen-web/assets/favicon.png">
+
   <style>
     :root {
-      --bg: #0d1117;
-      --card-bg: #161b22;
-      --card-border: #30363d;
-      --primary: #10b981;
-      --primary-hover: #059669;
-      --primary-glow: rgba(16, 185, 129, 0.2);
-      --accent: #38bdf8;
+      --bg-primary: #070b14;
+      --bg-secondary: #0d1527;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --bg-input: rgba(7, 11, 20, 0.85);
+      
+      --primary: #38bdf8;
+      --primary-blue: #3b82f6;
+      --primary-hover: #0284c7;
+      --primary-glow: rgba(56, 189, 248, 0.25);
+      --accent: #6366f1;
       --danger: #ef4444;
-      --text: #f0f6fc;
-      --text-muted: #8b949e;
-      --input-bg: #0b0f14;
+      --success: #10b981;
+      
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --border: rgba(59, 130, 246, 0.2);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(56, 189, 248, 0.6);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-full: 9999px;
+      
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 20px -5px rgba(56, 189, 248, 0.1);
+      --shadow-glow: 0 0 25px rgba(56, 189, 248, 0.25);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-primary);
       color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      line-height: 1.5;
+      overflow-x: hidden;
     }
+
+    /* Background Ambient Glows */
+    .ambient-glow {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .blob-1 {
+      position: absolute;
+      top: -150px;
+      left: 20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.16) 0%, rgba(56, 189, 248, 0.04) 50%, transparent 70%);
+      filter: blur(80px);
+    }
+    .blob-2 {
+      position: absolute;
+      top: 300px;
+      right: 15%;
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+      filter: blur(90px);
+    }
+
+    /* Header */
     header {
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--card-border);
-      padding: 18px 32px;
+      position: sticky;
+      top: 0;
+      width: 100%;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(7, 11, 20, 0.85);
+      border-bottom: 1px solid var(--border-subtle);
+      z-index: 100;
+    }
+    .header-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 14px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 16px;
     }
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
+      text-decoration: none;
+      color: var(--text);
     }
     .brand-logo {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, #10b981, #06b6d4);
+      width: 38px;
+      height: 38px;
       border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+      background: linear-gradient(135deg, #3b82f6, #38bdf8);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      color: #000;
+      color: #070b14;
       font-size: 20px;
+      overflow: hidden;
+      flex-shrink: 0;
     }
-    .brand h1 { font-size: 20px; font-weight: 700; }
-    .brand span { font-size: 13px; color: var(--text-muted); }
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 40%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+    .brand-text p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
     .nav-tabs {
       display: flex;
-      gap: 8px;
+      background: rgba(15, 23, 42, 0.8);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      gap: 4px;
     }
     .tab-btn {
       background: transparent;
-      border: 1px solid transparent;
+      border: none;
       color: var(--text-muted);
       padding: 8px 16px;
       border-radius: 8px;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
-    }
-    .tab-btn:hover { color: var(--text); }
-    .tab-btn.active {
-      background: var(--primary-glow);
-      color: var(--primary);
-      border-color: rgba(16, 185, 129, 0.4);
-    }
-
-    main {
-      flex: 1;
-      padding: 32px;
-      max-width: 1400px;
-      width: 100%;
-      margin: 0 auto;
-    }
-    .grid-layout {
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 32px;
-    }
-    @media (max-width: 1024px) {
-      .grid-layout { grid-template-columns: 1fr; }
-    }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
-    }
-    .card-title {
-      font-size: 17px;
-      font-weight: 700;
-      margin-bottom: 6px;
       display: flex;
       align-items: center;
       gap: 8px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .card-subtitle {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 20px;
+    .tab-btn:hover {
+      color: var(--text);
+    }
+    .tab-btn.active {
+      background: var(--primary-glow);
+      color: var(--primary);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 2px 8px rgba(56, 189, 248, 0.15);
     }
 
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 24px 60px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .grid-layout {
+        grid-template-columns: 1fr;
+      }
+      .preview-sticky {
+        order: 2;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-card);
+      transition: border-color 0.2s;
+    }
+    .card:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+    .card:last-child {
+      margin-bottom: 0;
+    }
+
+    .card-header {
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .card-title .icon-pill {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--primary-glow);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+    .card-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      padding-left: 38px;
+    }
+
+    /* Form Fields */
     .form-group {
       margin-bottom: 18px;
+    }
+    .form-group:last-child {
+      margin-bottom: 0;
     }
     label {
       display: block;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text);
-      margin-bottom: 6px;
+      color: #cbd5e1;
+      margin-bottom: 7px;
     }
     .hint {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
+      font-size: 11.5px;
+      color: var(--text-dim);
+      margin-top: 5px;
+      line-height: 1.4;
     }
+
     input[type="text"], textarea, select {
       width: 100%;
-      background: var(--input-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 10px 14px;
+      height: 44px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0 14px;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 13.5px;
       color: var(--text);
       outline: none;
-      transition: border-color 0.2s;
+      transition: all 0.2s;
     }
     input[type="text"]:focus, textarea:focus, select:focus {
       border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
     }
-    textarea { resize: vertical; min-height: 100px; }
+    textarea {
+      height: auto;
+      min-height: 105px;
+      padding: 12px 14px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 38px;
+      cursor: pointer;
+    }
 
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 600px) {
+      .input-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Switch Rows */
     .switch-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 14px;
-      background: var(--input-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
+      padding: 14px 16px;
+      background: rgba(7, 11, 20, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
       margin-bottom: 14px;
+      gap: 16px;
+      transition: border-color 0.2s;
     }
-    .switch-info h4 { font-size: 14px; font-weight: 600; }
-    .switch-info p { font-size: 12px; color: var(--text-muted); }
+    .switch-row:hover {
+      border-color: rgba(56, 189, 248, 0.2);
+    }
+    .switch-info h4 {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .switch-info p {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
     .switch {
       position: relative;
       display: inline-block;
       width: 44px;
       height: 24px;
+      flex-shrink: 0;
     }
-    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
     .slider {
-      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #374151; transition: .2s; border-radius: 24px;
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #334155;
+      transition: .25s;
+      border-radius: 24px;
     }
     .slider:before {
-      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-      background-color: white; transition: .2s; border-radius: 50%;
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .25s;
+      border-radius: 50%;
     }
-    input:checked + .slider { background-color: var(--primary); }
-    input:checked + .slider:before { transform: translateX(20px); }
+    input:checked + .slider {
+      background: linear-gradient(135deg, #3b82f6, #38bdf8);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
 
+    /* Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 11px 20px;
-      border-radius: 10px;
+      height: 44px;
+      padding: 0 20px;
+      border-radius: var(--radius-md);
       font-family: inherit;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       border: 1px solid transparent;
+      text-decoration: none;
     }
     .btn-primary {
-      background: var(--primary);
-      color: #000;
+      background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
+      color: #070b14;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
     }
-    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+      transform: translateY(-1px);
+    }
     .btn-secondary {
-      background: #21262d;
+      background: rgba(30, 41, 59, 0.8);
       color: var(--text);
-      border-color: var(--card-border);
+      border-color: rgba(255, 255, 255, 0.12);
     }
-    .btn-secondary:hover { background: #30363d; }
-    .btn-block { width: 100%; }
-
-    /* Button row editor */
-    .button-item {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-      align-items: center;
+    .btn-secondary:hover {
+      background: rgba(51, 65, 85, 0.9);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
     }
 
-    /* Phone preview */
-    .preview-container {
+    /* Code area */
+    pre {
+      background: rgba(7, 11, 20, 0.9);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #38bdf8;
+      overflow-x: auto;
+      max-height: 240px;
+      line-height: 1.5;
+    }
+
+    /* Phone Mockup (Sticky Right Column) */
+    .preview-sticky {
       position: sticky;
-      top: 32px;
+      top: 86px;
     }
-    .phone-mockup {
+    .preview-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: var(--shadow-card);
+    }
+    .preview-header {
       width: 100%;
-      height: 600px;
-      background: #000;
-      border: 8px solid #2d333b;
-      border-radius: 40px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .preview-header-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .preview-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      background: var(--primary-glow);
+      color: var(--primary);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .phone-mockup {
+      width: 320px;
+      height: 640px;
+      background: #0a0f1d;
+      border: 8px solid #1e293b;
+      border-radius: 42px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.12);
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      user-select: none;
     }
-    .phone-notch {
+
+    /* Phone Dynamic Island / Notch */
+    .phone-island {
       position: absolute;
-      top: 0;
+      top: 8px;
       left: 50%;
       transform: translateX(-50%);
-      width: 120px;
-      height: 20px;
-      background: #2d333b;
-      border-bottom-left-radius: 14px;
-      border-bottom-right-radius: 14px;
-      z-index: 10;
+      width: 96px;
+      height: 22px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 50;
+      border: 1px solid #1e293b;
     }
+
+    /* Phone Status Bar */
+    .phone-status-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      z-index: 40;
+    }
+    .phone-status-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* --- Phone Screen 1: App Background & Bottom Sheet --- */
+    .screen-popup {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    /* Simulated App Behind Bottom Sheet */
+    .simulated-app {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, #090e1a 0%, #0d1527 100%);
+      padding: 48px 16px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .dummy-app-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .dummy-logo {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+    .dummy-card {
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .dummy-line {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      width: 70%;
+    }
+    .dummy-line.short { width: 40%; }
+    .dummy-line.full { width: 90%; }
+
+    /* Dimmed Backdrop */
     .phone-backdrop {
       position: absolute;
       inset: 0;
-      background: rgba(0,0,0,0.65);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 10;
     }
+
+    /* Actual Bottom Sheet */
     .phone-sheet {
       position: relative;
-      background: #1c2128;
-      border-top-left-radius: 28px;
-      border-top-right-radius: 28px;
-      padding: 20px;
-      border: 1px solid #373e47;
+      background: #111827;
+      border-top-left-radius: 26px;
+      border-top-right-radius: 26px;
+      padding: 14px 18px 20px 18px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
       border-bottom: none;
-      z-index: 5;
+      z-index: 20;
+      box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.6);
+      transform: translateY(0);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .sheet-handle {
       width: 36px;
       height: 4px;
-      background: #444c56;
+      background: #374151;
       border-radius: 2px;
-      margin: 0 auto 16px auto;
+      margin: 0 auto 12px auto;
     }
-    .sheet-icon-title {
+    .sheet-header-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 12px;
     }
     .sheet-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: rgba(16, 185, 129, 0.2);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--primary-glow);
+      border: 1px solid rgba(56, 189, 248, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 18px;
+      flex-shrink: 0;
     }
-    .sheet-title { font-size: 16px; font-weight: 700; color: #fff; }
-    .sheet-tag { font-size: 11px; font-weight: 600; color: var(--primary); }
+    .sheet-title-col {
+      flex: 1;
+      min-width: 0;
+    }
+    .sheet-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .sheet-tag {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--primary);
+    }
     .sheet-body {
-      background: #22272e;
-      border-radius: 14px;
-      padding: 12px;
-      font-size: 13px;
-      line-height: 1.5;
-      color: #adbac7;
-      margin-bottom: 16px;
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: #cbd5e1;
+      margin-bottom: 14px;
       white-space: pre-wrap;
-      max-height: 220px;
+      max-height: 190px;
       overflow-y: auto;
     }
     .sheet-buttons {
@@ -303,225 +673,505 @@
     }
     .sheet-btn {
       flex: 1;
-      padding: 10px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: center;
-    }
-    .sheet-btn-primary { background: var(--primary); color: #000; }
-    .sheet-btn-secondary { background: #2d333b; color: #adbac7; }
-
-    /* Code area */
-    pre {
-      background: var(--input-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 14px;
-      font-family: 'JetBrains Mono', monospace;
+      padding: 9px 10px;
+      border-radius: 10px;
       font-size: 12px;
-      color: #7ee787;
-      overflow-x: auto;
-      max-height: 250px;
+      font-weight: 700;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .sheet-btn-primary {
+      background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
+      color: #070b14;
+    }
+    .sheet-btn-secondary {
+      background: #1f2937;
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* --- Phone Screen 2: Lock Screen Push Notification --- */
+    .screen-push {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, #1e3a8a 0%, #070b14 70%);
+      padding: 50px 16px 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .lock-time {
+      font-size: 48px;
+      font-weight: 300;
+      color: #fff;
+      margin-top: 18px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .lock-date {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #cbd5e1;
+      margin-top: 6px;
+      margin-bottom: 30px;
+    }
+    .push-card {
+      width: 100%;
+      background: rgba(30, 41, 59, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-radius: 18px;
+      padding: 12px 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      animation: pushSlide 0.3s ease-out;
+    }
+    @keyframes pushSlide {
+      from { transform: translateY(-10px) scale(0.96); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .push-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .push-app-info {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .push-app-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #3b82f6, #38bdf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: #070b14;
+    }
+    .push-app-name {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #e2e8f0;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .push-time {
+      font-size: 10.5px;
+      color: #94a3b8;
+    }
+    .push-title-text {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+    .push-body-text {
+      font-size: 11.5px;
+      color: #cbd5e1;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0f172a;
+      border: 1px solid var(--primary);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7), 0 0 20px rgba(56, 189, 248, 0.3);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: var(--radius-full);
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
   </style>
 </head>
 <body>
 
+  <!-- Ambient Blue Background Aura -->
+  <div class="ambient-glow" aria-hidden="true">
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+  </div>
+
+  <!-- Header -->
   <header>
-    <div class="brand">
-      <div class="brand-logo">P</div>
-      <div>
-        <h1>Pergamen Vezérlőpult</h1>
-        <span>Távoli In-App Pop-up és Push Értesítés Kezelő</span>
+    <div class="header-container">
+      <a href="https://materadetzky.github.io/pergamen-web/" class="brand">
+        <div class="brand-logo">
+          <img src="https://materadetzky.github.io/pergamen-web/assets/logo.png" alt="Pergamen Logo" onerror="this.style.display='none'; this.parentElement.innerText='P';">
+        </div>
+        <div class="brand-text">
+          <h1>Pergamen Vezérlőpult</h1>
+          <p>Távoli In-App Pop-up és Push Értesítés Kezelő</p>
+        </div>
+      </a>
+
+      <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('popup')">
+          <span>📱</span> In-App Pop-up
+        </button>
+        <button class="tab-btn" onclick="switchTab('push')">
+          <span>🔔</span> Push Értesítés
+        </button>
       </div>
-    </div>
-    <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('popup')">📱 In-App Pop-up</button>
-      <button class="tab-btn" onclick="switchTab('push')">🔔 Push Értesítés</button>
     </div>
   </header>
 
+  <!-- Main Content -->
   <main>
-    <!-- TAB 1: IN-APP POPUP -->
-    <div id="tab-popup" class="grid-layout">
-      <div>
-        <div class="card">
-          <div class="card-title">✨ Pop-up Beállítások</div>
-          <div class="card-subtitle">Állítsd be a távoli felugró ablak tartalmát és viselkedését.</div>
-
-          <div class="switch-row">
-            <div class="switch-info">
-              <h4>Pop-up Bekapcsolva (Enabled)</h4>
-              <p>Ha be van kapcsolva, a felhasználók meglátják az app indításakor.</p>
+    <div class="grid-layout">
+      
+      <!-- LEFT COLUMN: CONTROLS & FORMS -->
+      <div class="controls-column">
+        
+        <!-- ==================== TAB 1: IN-APP POPUP ==================== -->
+        <div id="tab-popup-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="icon-pill">✨</span>
+                Pop-up Viselkedés és Állapot
+              </div>
+              <div class="card-subtitle">Állítsd be a felugró ablak megjelenítését, azonosítóját és típusát.</div>
             </div>
-            <label class="switch">
-              <input type="checkbox" id="popup-enabled" checked onchange="updatePreview()">
-              <span class="slider"></span>
-            </label>
-          </div>
 
-          <div class="switch-row">
-            <div class="switch-info">
-              <h4>Kényszerített frissítés (Force Update)</h4>
-              <p>Nem lehet bezárni a gomb megnyomása nélkül (kötelező frissítéshez).</p>
+            <div class="switch-row">
+              <div class="switch-info">
+                <h4>Pop-up Bekapcsolva (Enabled)</h4>
+                <p>Ha aktív, az alkalmazás indításakor minden felhasználónak megjelenik.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="popup-enabled" checked onchange="updatePreview()">
+                <span class="slider"></span>
+              </label>
             </div>
-            <label class="switch">
-              <input type="checkbox" id="popup-force" onchange="updatePreview()">
-              <span class="slider"></span>
-            </label>
+
+            <div class="switch-row">
+              <div class="switch-info">
+                <h4>Kényszerített frissítés (Force Update)</h4>
+                <p>Nem zárható be a gomb nélkül (kritikus javításokhoz és kötelező verziókhoz).</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="popup-force" onchange="updatePreview()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="input-grid" style="margin-top: 18px;">
+              <div class="form-group">
+                <label>Egyedi Azonosító (ID)</label>
+                <input type="text" id="popup-id" value="update_v1_2_16" oninput="updatePreview()" placeholder="pl. update_v1_2_16">
+                <div class="hint">Ha új ID-t adsz meg, az ablak újra felugrik azoknak is, akik korábban bezárták.</div>
+              </div>
+              <div class="form-group">
+                <label>Célzott Platform</label>
+                <select id="popup-platform" onchange="updatePreview()">
+                  <option value="all">Minden eszköz (Android & iOS)</option>
+                  <option value="android">Csak Android</option>
+                  <option value="ios">Csak iOS</option>
+                </select>
+                <div class="hint">Kiválaszthatod, hogy melyik operációs rendszeren jelenjen meg.</div>
+              </div>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label>Egyedi Azonosító (ID)</label>
-            <input type="text" id="popup-id" value="update_v1_2_16" oninput="updatePreview()">
-            <div class="hint">Ha megváltoztatod ezt az ID-t, a felhasználók újra látni fogják az ablakot.</div>
-          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="icon-pill">📝</span>
+                Tartalom és Szövegezés
+              </div>
+              <div class="card-subtitle">Az ablak címe, címkéje és a részletes leírás Markdown támogatással.</div>
+            </div>
 
-          <div class="form-group">
-            <label>Cím (Title)</label>
-            <input type="text" id="popup-title" value="🎉 Új Pergamen verzió elérhető!" oninput="updatePreview()">
-          </div>
+            <div class="input-grid">
+              <div class="form-group">
+                <label>Cím (Title)</label>
+                <input type="text" id="popup-title" value="🎉 Új Pergamen verzió elérhető!" oninput="updatePreview()" placeholder="A felugró ablak főcíme">
+              </div>
+              <div class="form-group">
+                <label>Címke / Verziószám (Tag)</label>
+                <input type="text" id="popup-tag" value="v1.2.16 BETA" oninput="updatePreview()" placeholder="pl. v1.2.16 BETA">
+              </div>
+            </div>
 
-          <div class="form-group">
-            <label>Címke / Verziószám (Tag)</label>
-            <input type="text" id="popup-tag" value="v1.2.16 BETA" oninput="updatePreview()">
-          </div>
-
-          <div class="form-group">
-            <label>Leírás / Újdonságok (Markdown & Emojik támogatva)</label>
-            <textarea id="popup-message" oninput="updatePreview()">Megjelent a Pergamen v1.2.16!
+            <div class="form-group">
+              <label>Leírás / Újdonságok (Markdown és emojik használhatók)</label>
+              <textarea id="popup-message" oninput="updatePreview()">Megjelent a Pergamen v1.2.16!
 
 • Új távoli értesítések és in-app pop-up rendszer
 • Javított kezdőképernyő ikonváltás iOS és Android rendszereken
 • Hibajavítások és sebességoptimalizálás</textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Célzott Platform</label>
-            <select id="popup-platform" onchange="updatePreview()">
-              <option value="all">Minden eszköz (Android & iOS)</option>
-              <option value="android">Csak Android</option>
-              <option value="ios">Csak iOS</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">🔘 Gombok Testreszabása</div>
-          <div class="card-subtitle">Határozd meg, hova mutassanak a pop-up gombjai.</div>
-
-          <div class="form-group">
-            <label>1. Gomb (Elsődleges / Letöltés)</label>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 6px;">
-              <input type="text" id="btn1-text" value="Frissítés letöltése" oninput="updatePreview()" placeholder="Gomb szövege">
-              <select id="btn1-action" onchange="updatePreview()">
-                <option value="open_url">Link megnyitása (URL)</option>
-                <option value="dismiss">Ablak bezárása</option>
-              </select>
-            </div>
-            <input type="text" id="btn1-url" value="https://github.com/materadetzky/pergamen/releases/latest" oninput="updatePreview()" placeholder="https://...">
-          </div>
-
-          <div class="form-group">
-            <label>2. Gomb (Másodlagos / Bezárás)</label>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-              <input type="text" id="btn2-text" value="Később" oninput="updatePreview()" placeholder="Gomb szövege">
-              <select id="btn2-action" onchange="updatePreview()">
-                <option value="dismiss">Ablak bezárása</option>
-                <option value="open_url">Link megnyitása</option>
-              </select>
+              <div class="hint">Formázhatsz vastag betűvel (**kiemelt**) vagy listajelekkel (• pontok).</div>
             </div>
           </div>
-        </div>
 
-        <div class="card">
-          <div class="card-title">🚀 Közzététel & Generált JSON</div>
-          <div class="card-subtitle">Ezt a JSON-t kell bemásolnod a GitHub <code>config/remote_popup.json</code> fájlba, vagy közvetlenül elmentheted.</div>
-          <pre id="json-preview"></pre>
-          <div style="display: flex; gap: 12px; margin-top: 16px;">
-            <button class="btn btn-primary" onclick="copyJSON()">📋 JSON Másolása Vágólapra</button>
-            <a href="https://github.com/materadetzky/pergamen/edit/main/config/remote_popup.json" target="_blank" class="btn btn-secondary">✏️ Megnyitás a GitHub Szerkesztőben</a>
-          </div>
-        </div>
-      </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="icon-pill">🔘</span>
+                Gombok Testreszabása
+              </div>
+              <div class="card-subtitle">Határozd meg a cselekvési gombok feliratát, típusát és cél URL-jét.</div>
+            </div>
 
-      <!-- PREVIEW COLUMN -->
-      <div class="preview-container">
-        <div class="card-title" style="margin-bottom: 12px;">📱 Élő Alkalmazás Előnézet</div>
-        <div class="phone-mockup">
-          <div class="phone-notch"></div>
-          <div class="phone-backdrop"></div>
-          <div class="phone-sheet">
-            <div class="sheet-handle" id="preview-handle"></div>
-            <div class="sheet-icon-title">
-              <div class="sheet-icon" id="preview-icon">📢</div>
-              <div>
-                <div class="sheet-title" id="preview-title">Cím</div>
-                <div class="sheet-tag" id="preview-tag">Tag</div>
+            <div class="form-group">
+              <label>1. Gomb (Elsődleges / Letöltés)</label>
+              <div class="input-grid" style="margin-bottom: 8px;">
+                <input type="text" id="btn1-text" value="Frissítés letöltése" oninput="updatePreview()" placeholder="Gomb szövege">
+                <select id="btn1-action" onchange="updatePreview()">
+                  <option value="open_url">Link megnyitása (URL)</option>
+                  <option value="dismiss">Ablak bezárása</option>
+                </select>
+              </div>
+              <input type="text" id="btn1-url" value="https://github.com/materadetzky/pergamen/releases/latest" oninput="updatePreview()" placeholder="https://github.com/materadetzky/pergamen/releases/latest">
+            </div>
+
+            <div class="form-group">
+              <label>2. Gomb (Másodlagos / Elvetés)</label>
+              <div class="input-grid">
+                <input type="text" id="btn2-text" value="Később" oninput="updatePreview()" placeholder="Gomb szövege (üresen hagyva elrejtve)">
+                <select id="btn2-action" onchange="updatePreview()">
+                  <option value="dismiss">Ablak bezárása</option>
+                  <option value="open_url">Link megnyitása (URL)</option>
+                </select>
               </div>
             </div>
-            <div class="sheet-body" id="preview-message">Szöveg...</div>
-            <div class="sheet-buttons">
-              <div class="sheet-btn sheet-btn-primary" id="preview-btn1">Letöltés</div>
-              <div class="sheet-btn sheet-btn-secondary" id="preview-btn2">Később</div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="icon-pill">🚀</span>
+                Generált Konfiguráció & Közzététel
+              </div>
+              <div class="card-subtitle">Másold ki az alábbi JSON-t és illeszd be a GitHub repó <code>config/remote_popup.json</code> fájljába.</div>
+            </div>
+
+            <pre id="json-preview"></pre>
+
+            <div style="display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap;">
+              <button class="btn btn-primary" onclick="copyJSON()">📋 JSON Másolása Vágólapra</button>
+              <a href="https://github.com/materadetzky/pergamen/edit/main/config/remote_popup.json" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">✏️ Megnyitás GitHub Szerkesztőben</a>
             </div>
           </div>
         </div>
+
+        <!-- ==================== TAB 2: PUSH NOTIFICATIONS ==================== -->
+        <div id="tab-push-content" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="icon-pill">🔔</span>
+                Zárt Appos Push Értesítés
+              </div>
+              <div class="card-subtitle">Küldj azonnali rendszerértesítést zárt és háttérben futó alkalmazásokra.</div>
+            </div>
+
+            <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 16px; margin-bottom: 22px;">
+              <div style="display: flex; align-items: center; gap: 8px; color: var(--primary); font-weight: 700; font-size: 13.5px; margin-bottom: 4px;">
+                <span>⚡</span> Firebase Projekt Csatlakoztatva: <code>pergamen-noti</code>
+              </div>
+              <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.45;">
+                Az összes Pergamen v1.2.16+ kliens automatikusan feliratkozik a <code>/topics/all</code> és <code>/topics/updates</code> témakörökre. A Firebase felületén elküldött értesítések zárt telefonokon is azonnal megjelennek.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label>Értesítés Címe (Title)</label>
+              <input type="text" id="push-title" value="Új Pergamen verzió elérhető!" oninput="updatePushPreview()" placeholder="pl. Új Pergamen verzió elérhető!">
+            </div>
+
+            <div class="form-group">
+              <label>Értesítés Szövege (Body)</label>
+              <textarea id="push-body" oninput="updatePushPreview()" placeholder="pl. Kattints a frissítés letöltéséhez és telepítéséhez!">Kattints a legfrissebb v1.2.16 BETA letöltéséhez és telepítéséhez!</textarea>
+            </div>
+
+            <div class="input-grid">
+              <div class="form-group">
+                <label>Célcsoport (Topic)</label>
+                <select id="push-topic">
+                  <option value="updates">Frissítések (/topics/updates)</option>
+                  <option value="all">Minden felhasználó (/topics/all)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Kattintási Cél URL (Opcionális)</label>
+                <input type="text" id="push-url" value="https://github.com/materadetzky/pergamen/releases/latest" placeholder="https://...">
+              </div>
+            </div>
+
+            <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+              <a href="https://console.firebase.google.com/project/pergamen-noti/notification/compose" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="flex: 1;">
+                🚀 Megnyitás a Firebase Értesítésküldőben
+              </a>
+              <button class="btn btn-secondary" onclick="copyPushDetails()">📋 Szöveg Másolása</button>
+            </div>
+          </div>
+        </div>
+
       </div>
-    </div>
 
-    <!-- TAB 2: PUSH NOTIFICATION -->
-    <div id="tab-push" style="display: none;">
-      <div class="card" style="max-width: 800px; margin: 0 auto;">
-        <div class="card-title">🔔 Zárt Appos Push Értesítés Kiküldése</div>
-        <div class="card-subtitle">Küldj értesítést az összes telepített telefonra a beállított Firebase projekt (<code>pergamen-noti</code>) segítségével.</div>
+      <!-- RIGHT COLUMN: REALISTIC STICKY PHONE MOCKUP -->
+      <div class="preview-sticky">
+        <div class="preview-card">
+          <div class="preview-header">
+            <div class="preview-header-title">
+              <span>📱</span>
+              <span id="preview-mode-title">Élő Alkalmazás Előnézet</span>
+            </div>
+            <span class="preview-badge" id="preview-mode-badge">In-App Pop-up</span>
+          </div>
 
-        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
-          <h4 style="color: var(--primary); margin-bottom: 6px;">✅ Firebase Projekt Aktív: pergamen-noti</h4>
-          <p style="font-size: 13px; color: var(--text-muted);">
-            Az appban beállítottuk az automatikus feliratkozást a <code>/topics/all</code> és <code>/topics/updates</code> témakörökre. A Firebase Console felületén 1 kattintással kiküldheted az értesítést zárt telefonokra is!
-          </p>
-        </div>
+          <div class="phone-mockup">
+            <!-- Dynamic Island -->
+            <div class="phone-island"></div>
 
-        <div class="form-group">
-          <label>Értesítés Címe (Title)</label>
-          <input type="text" id="push-title" value="Új Pergamen verzió elérhető!">
-        </div>
+            <!-- Status Bar -->
+            <div class="phone-status-bar">
+              <span>09:41</span>
+              <div class="phone-status-right">
+                <svg width="14" height="12" viewBox="0 0 16 12" fill="currentColor">
+                  <path d="M0 10h2V6H0v4zm3 0h2V4H3v6zm3 0h2V2H6v8zm3 0h2V0H9v10zm3 0h2v-8h-2v8z"/>
+                </svg>
+                <svg width="14" height="12" viewBox="0 0 16 12" fill="currentColor">
+                  <path d="M8 2c-3.1 0-5.8 1.4-7.6 3.6l7.6 8.4 7.6-8.4C13.8 3.4 11.1 2 8 2z"/>
+                </svg>
+                <svg width="18" height="12" viewBox="0 0 24 12" fill="currentColor">
+                  <rect x="1" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+                  <rect x="3" y="3" width="12" height="6" rx="1.5"/>
+                  <path d="M21 4v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
 
-        <div class="form-group">
-          <label>Értesítés Szövege (Body)</label>
-          <textarea id="push-body">Kattints a legfrissebb v1.2.16 BETA letöltéséhez és telepítéséhez!</textarea>
-        </div>
+            <!-- SCREEN 1: IN-APP POPUP -->
+            <div class="screen-popup" id="screen-popup">
+              <!-- Background App Screen -->
+              <div class="simulated-app">
+                <div class="dummy-app-bar">
+                  <div class="dummy-logo">Pergamen</div>
+                  <div class="dummy-line short" style="height: 6px;"></div>
+                </div>
+                <div class="dummy-card" style="margin-top: 8px;">
+                  <div class="dummy-line"></div>
+                  <div class="dummy-line full"></div>
+                  <div class="dummy-line short"></div>
+                </div>
+                <div class="dummy-card">
+                  <div class="dummy-line full"></div>
+                  <div class="dummy-line short"></div>
+                </div>
+                <div class="dummy-card">
+                  <div class="dummy-line"></div>
+                  <div class="dummy-line short"></div>
+                </div>
+              </div>
 
-        <div class="form-group">
-          <label>Célcsoport (Topic)</label>
-          <select id="push-topic">
-            <option value="updates">Frissítések (/topics/updates)</option>
-            <option value="all">Minden felhasználó (/topics/all)</option>
-          </select>
-        </div>
+              <!-- Dimmed Backdrop -->
+              <div class="phone-backdrop"></div>
 
-        <div style="display: flex; gap: 12px; margin-top: 24px;">
-          <a href="https://console.firebase.google.com/project/pergamen-noti/notification/compose" target="_blank" class="btn btn-primary" style="flex: 1;">
-            🚀 Megnyitás a Firebase Értesítésküldőben
-          </a>
+              <!-- Animated Bottom Sheet -->
+              <div class="phone-sheet">
+                <div class="sheet-handle" id="preview-handle"></div>
+                <div class="sheet-header-row">
+                  <div class="sheet-icon" id="preview-icon">📢</div>
+                  <div class="sheet-title-col">
+                    <div class="sheet-title" id="preview-title">Cím betöltése...</div>
+                    <div class="sheet-tag" id="preview-tag">v1.2.16</div>
+                  </div>
+                </div>
+                <div class="sheet-body" id="preview-message">Üzenet tartalma...</div>
+                <div class="sheet-buttons">
+                  <div class="sheet-btn sheet-btn-primary" id="preview-btn1">Letöltés</div>
+                  <div class="sheet-btn sheet-btn-secondary" id="preview-btn2">Később</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SCREEN 2: LOCK SCREEN PUSH NOTIFICATION -->
+            <div class="screen-push" id="screen-push" style="display: none;">
+              <div class="lock-time">09:41</div>
+              <div class="lock-date">Kedd, november 7.</div>
+
+              <div class="push-card">
+                <div class="push-header">
+                  <div class="push-app-info">
+                    <div class="push-app-icon">P</div>
+                    <span class="push-app-name">Pergamen</span>
+                  </div>
+                  <span class="push-time">most</span>
+                </div>
+                <div class="push-title-text" id="preview-push-title">Új Pergamen verzió elérhető!</div>
+                <div class="push-body-text" id="preview-push-body">Kattints a legfrissebb v1.2.16 BETA letöltéséhez és telepítéséhez!</div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
+
     </div>
   </main>
+
+  <!-- Floating Toast Notification -->
+  <div class="toast" id="toast">
+    <span>✅</span> <span id="toast-text">Sikeresen másolva a vágólapra!</span>
+  </div>
 
   <script>
     function switchTab(tab) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      const popupContent = document.getElementById('tab-popup-content');
+      const pushContent = document.getElementById('tab-push-content');
+      const screenPopup = document.getElementById('screen-popup');
+      const screenPush = document.getElementById('screen-push');
+      const modeTitle = document.getElementById('preview-mode-title');
+      const modeBadge = document.getElementById('preview-mode-badge');
+
       if (tab === 'popup') {
-        document.getElementById('tab-popup').style.display = 'grid';
-        document.getElementById('tab-push').style.display = 'none';
+        popupContent.style.display = 'block';
+        pushContent.style.display = 'none';
+        screenPopup.style.display = 'flex';
+        screenPush.style.display = 'none';
+        modeTitle.innerText = 'Élő Alkalmazás Előnézet';
+        modeBadge.innerText = 'In-App Pop-up';
         document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        updatePreview();
       } else {
-        document.getElementById('tab-popup').style.display = 'none';
-        document.getElementById('tab-push').style.display = 'block';
+        popupContent.style.display = 'none';
+        pushContent.style.display = 'block';
+        screenPopup.style.display = 'none';
+        screenPush.style.display = 'flex';
+        modeTitle.innerText = 'Zárolási Képernyő Előnézet';
+        modeBadge.innerText = 'Push Értesítés';
         document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        updatePushPreview();
       }
     }
 
@@ -543,12 +1193,12 @@
 
       const buttons = [];
       if (btn1Text.trim()) {
-        const b = { text: btn1Text, action: btn1Action, primary: true };
+        const b = { text: btn1Text.trim(), action: btn1Action, primary: true };
         if (btn1Action === 'open_url' && btn1Url.trim()) b.url = btn1Url.trim();
         buttons.push(b);
       }
       if (btn2Text.trim()) {
-        buttons.push({ text: btn2Text, action: btn2Action, primary: false });
+        buttons.push({ text: btn2Text.trim(), action: btn2Action, primary: false });
       }
 
       const obj = {
@@ -576,24 +1226,73 @@
       const btn1Text = document.getElementById('btn1-text').value;
       const btn2Text = document.getElementById('btn2-text').value;
 
-      document.getElementById('preview-title').innerText = title || 'Cím';
-      document.getElementById('preview-tag').innerText = tag || '';
+      document.getElementById('preview-title').innerText = title || 'Értesítés';
+      const tagEl = document.getElementById('preview-tag');
+      if (tag.trim()) {
+        tagEl.style.display = 'block';
+        tagEl.innerText = tag.trim();
+      } else {
+        tagEl.style.display = 'none';
+      }
+
       document.getElementById('preview-message').innerText = message || '';
-      document.getElementById('preview-btn1').innerText = btn1Text || 'OK';
-      document.getElementById('preview-btn2').innerText = btn2Text || 'Bezárás';
+
+      const btn1El = document.getElementById('preview-btn1');
+      if (btn1Text.trim()) {
+        btn1El.style.display = 'block';
+        btn1El.innerText = btn1Text.trim();
+      } else {
+        btn1El.style.display = 'none';
+      }
+
+      const btn2El = document.getElementById('preview-btn2');
+      if (btn2Text.trim()) {
+        btn2El.style.display = 'block';
+        btn2El.innerText = btn2Text.trim();
+      } else {
+        btn2El.style.display = 'none';
+      }
 
       document.getElementById('preview-icon').innerText = force ? '⚠️' : '📢';
       document.getElementById('preview-handle').style.display = force ? 'none' : 'block';
     }
 
+    function updatePushPreview() {
+      const title = document.getElementById('push-title').value;
+      const body = document.getElementById('push-body').value;
+      document.getElementById('preview-push-title').innerText = title || 'Értesítés címe';
+      document.getElementById('preview-push-body').innerText = body || 'Értesítés szövege...';
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-text').innerText = msg;
+      t.classList.add('show');
+      setTimeout(() => {
+        t.classList.remove('show');
+      }, 3200);
+    }
+
     function copyJSON() {
       const jsonStr = buildJSON();
       navigator.clipboard.writeText(jsonStr).then(() => {
-        alert('✅ JSON sikeresen a vágólapra másolva! Illeszd be a GitHub config/remote_popup.json fájlba.');
+        showToast('JSON vágólapra másolva! Illeszd be a config/remote_popup.json fájlba.');
       });
     }
 
+    function copyPushDetails() {
+      const title = document.getElementById('push-title').value;
+      const body = document.getElementById('push-body').value;
+      const url = document.getElementById('push-url').value;
+      const text = `Cím: ${title}\nSzöveg: ${body}\nURL: ${url}`;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Értesítés adatai másolva a vágólapra!');
+      });
+    }
+
+    // Initial run
     updatePreview();
+    updatePushPreview();
   </script>
 </body>
 </html>
