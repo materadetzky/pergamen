@@ -21,6 +21,7 @@ import 'package:folio_mobile_ui/screens/navigation/status_bar.dart';
 import 'package:folio_mobile_ui/screens/news/news_view.dart';
 import 'package:folio_mobile_ui/screens/settings/live_activity_consent_dialog.dart';
 import 'package:folio_mobile_ui/common/widgets/update/update_dialog.dart';
+import 'package:folio/api/services/remote_popup_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -157,6 +158,9 @@ class NavigationScreenState extends State<NavigationScreen>
         LiveActivityConsentDialog.show(context);
       });
     }
+
+    // Check for remote popup announcements / update prompts
+    RemotePopupService.checkForPopup(context);
   }
 
   @override

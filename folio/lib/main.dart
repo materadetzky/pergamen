@@ -20,6 +20,8 @@ import 'dart:io';
 
 import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:folio/services/push_notification_service.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:folio/api/providers/user_provider.dart';
 import 'package:folio/api/providers/database_provider.dart';
@@ -60,24 +62,37 @@ void main() async {
     setupLocator();
     await appendLog('2. Locator setup complete');
 
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       try {
-        await Firebase.initializeApp(
-          name: defaultFirebaseAppName,
-          options: const FirebaseOptions(
-            apiKey: "AIzaSyA_SnXigQkSvFuB5ECpgz8pZ1SjKzuKiFo",
-            appId: "1:694136934013:android:2d6873f63e005250",
-            androidClientId:
-                "694136934013-6e2jmrbqume6lt92d2ceb5se6uru4uvm.apps.googleusercontent.com",
-            projectId: "ellenorzo-v2",
-            messagingSenderId: "694136934013",
-            storageBucket: "ellenorzo-v2.appspot.com",
-            databaseURL: "https://ellenorzo-v2.firebaseio.com",
-          ),
-        );
-        await appendLog('3. Firebase initialized');
+        await Firebase.initializeApp();
+        await appendLog('3. Native Firebase initialized');
       } catch (e) {
-        await appendLog('3. Firebase skipped: $e');
+        await appendLog('3. Native Firebase skipped: $e');
+        if (Platform.isAndroid) {
+          try {
+            await Firebase.initializeApp(
+              name: defaultFirebaseAppName,
+              options: const FirebaseOptions(
+                apiKey: "AIzaSyCmWmn9Dr4sgVgA9zFe8rI_rp3m8D07N00",
+                appId: "1:94936564605:android:d578a7b50c5ef8b0294214",
+                projectId: "pergamen-noti",
+                messagingSenderId: "94936564605",
+                storageBucket: "pergamen-noti.firebasestorage.app",
+              ),
+            );
+            await appendLog('3. Fallback Firebase initialized');
+          } catch (e2) {
+            await appendLog('3. Fallback Firebase skipped: $e2');
+          }
+        }
+      }
+
+      try {
+        FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+        await PushNotificationService.initialize();
+        await appendLog('3.1. PushNotificationService initialized');
+      } catch (e) {
+        await appendLog('3.1. PushNotificationService skipped: $e');
       }
     }
 

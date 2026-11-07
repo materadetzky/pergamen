@@ -1,0 +1,22 @@
+{
+  "id": "welcome_1_2_15",
+  "enabled": false,
+  "title": "🎉 Üdvözlünk a Pergamenben!",
+  "message": "A legújabb verzióban elérhető a megújult dinamikus alkalmazásikon-váltó natív kezdőképernyő támogatással, valamint a javított bejelentkezési és értesítési rendszer.\n\nJó tanulást kíván a Pergamen csapata!",
+  "tag": "v1.2.15 BETA",
+  "platform": "all",
+  "force_update": false,
+  "buttons": [
+    {
+      "text": "Weboldal",
+      "action": "open_url",
+      "url": "https://materadetzky.github.io/pergamen-web",
+      "primary": true
+    },
+    {
+      "text": "Rendben",
+      "action": "dismiss",
+      "primary": false
+    }
+  ]
+}

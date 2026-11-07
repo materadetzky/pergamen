@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "123456789012",
-    "project_id": "pergamen-app",
-    "storage_bucket": "pergamen-app.appspot.com"
+    "project_number": "94936564605",
+    "project_id": "pergamen-noti",
+    "storage_bucket": "pergamen-noti.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:abcdef0123456789abcdef",
+        "mobilesdk_app_id": "1:94936564605:android:d578a7b50c5ef8b0294214",
         "android_client_info": {
           "package_name": "app.pergamen.students"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "dummy_api_key_for_build"
+          "current_key": "AIzaSyCmWmn9Dr4sgVgA9zFe8rI_rp3m8D07N00"
         }
       ],
       "services": {

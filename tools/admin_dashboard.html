@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pergamen Remote Control Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --primary-glow: rgba(16, 185, 129, 0.2);
+      --accent: #38bdf8;
+      --danger: #ef4444;
+      --text: #f0f6fc;
+      --text-muted: #8b949e;
+      --input-bg: #0b0f14;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--card-border);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #10b981, #06b6d4);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #000;
+      font-size: 20px;
+    }
+    .brand h1 { font-size: 20px; font-weight: 700; }
+    .brand span { font-size: 13px; color: var(--text-muted); }
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active {
+      background: var(--primary-glow);
+      color: var(--primary);
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+
+    main {
+      flex: 1;
+      padding: 32px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 32px;
+    }
+    @media (max-width: 1024px) {
+      .grid-layout { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    input[type="text"], textarea, select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+    }
+    textarea { resize: vertical; min-height: 100px; }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+    .switch-info h4 { font-size: 14px; font-weight: 600; }
+    .switch-info p { font-size: 12px; color: var(--text-muted); }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #374151; transition: .2s; border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+      background-color: white; transition: .2s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #000;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary {
+      background: #21262d;
+      color: var(--text);
+      border-color: var(--card-border);
+    }
+    .btn-secondary:hover { background: #30363d; }
+    .btn-block { width: 100%; }
+
+    /* Button row editor */
+    .button-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    /* Phone preview */
+    .preview-container {
+      position: sticky;
+      top: 32px;
+    }
+    .phone-mockup {
+      width: 100%;
+      height: 600px;
+      background: #000;
+      border: 8px solid #2d333b;
+      border-radius: 40px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 20px;
+      background: #2d333b;
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
+      z-index: 10;
+    }
+    .phone-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+    }
+    .phone-sheet {
+      position: relative;
+      background: #1c2128;
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      padding: 20px;
+      border: 1px solid #373e47;
+      border-bottom: none;
+      z-index: 5;
+    }
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: #444c56;
+      border-radius: 2px;
+      margin: 0 auto 16px auto;
+    }
+    .sheet-icon-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .sheet-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .sheet-title { font-size: 16px; font-weight: 700; color: #fff; }
+    .sheet-tag { font-size: 11px; font-weight: 600; color: var(--primary); }
+    .sheet-body {
+      background: #22272e;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #adbac7;
+      margin-bottom: 16px;
+      white-space: pre-wrap;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .sheet-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .sheet-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .sheet-btn-primary { background: var(--primary); color: #000; }
+    .sheet-btn-secondary { background: #2d333b; color: #adbac7; }
+
+    /* Code area */
+    pre {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #7ee787;
+      overflow-x: auto;
+      max-height: 250px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo">P</div>
+      <div>
+        <h1>Pergamen Vezérlőpult</h1>
+        <span>Távoli In-App Pop-up és Push Értesítés Kezelő</span>
+      </div>
+    </div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('popup')">📱 In-App Pop-up</button>
+      <button class="tab-btn" onclick="switchTab('push')">🔔 Push Értesítés</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- TAB 1: IN-APP POPUP -->
+    <div id="tab-popup" class="grid-layout">
+      <div>
+        <div class="card">
+          <div class="card-title">✨ Pop-up Beállítások</div>
+          <div class="card-subtitle">Állítsd be a távoli felugró ablak tartalmát és viselkedését.</div>
+
+          <div class="switch-row">
+            <div class="switch-info">
+              <h4>Pop-up Bekapcsolva (Enabled)</h4>
+              <p>Ha be van kapcsolva, a felhasználók meglátják az app indításakor.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="popup-enabled" checked onchange="updatePreview()">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="switch-row">
+            <div class="switch-info">
+              <h4>Kényszerített frissítés (Force Update)</h4>
+              <p>Nem lehet bezárni a gomb megnyomása nélkül (kötelező frissítéshez).</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="popup-force" onchange="updatePreview()">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label>Egyedi Azonosító (ID)</label>
+            <input type="text" id="popup-id" value="update_v1_2_16" oninput="updatePreview()">
+            <div class="hint">Ha megváltoztatod ezt az ID-t, a felhasználók újra látni fogják az ablakot.</div>
+          </div>
+
+          <div class="form-group">
+            <label>Cím (Title)</label>
+            <input type="text" id="popup-title" value="🎉 Új Pergamen verzió elérhető!" oninput="updatePreview()">
+          </div>
+
+          <div class="form-group">
+            <label>Címke / Verziószám (Tag)</label>
+            <input type="text" id="popup-tag" value="v1.2.16 BETA" oninput="updatePreview()">
+          </div>
+
+          <div class="form-group">
+            <label>Leírás / Újdonságok (Markdown & Emojik támogatva)</label>
+            <textarea id="popup-message" oninput="updatePreview()">Megjelent a Pergamen v1.2.16!
+
+• Új távoli értesítések és in-app pop-up rendszer
+• Javított kezdőképernyő ikonváltás iOS és Android rendszereken
+• Hibajavítások és sebességoptimalizálás</textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Célzott Platform</label>
+            <select id="popup-platform" onchange="updatePreview()">
+              <option value="all">Minden eszköz (Android & iOS)</option>
+              <option value="android">Csak Android</option>
+              <option value="ios">Csak iOS</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔘 Gombok Testreszabása</div>
+          <div class="card-subtitle">Határozd meg, hova mutassanak a pop-up gombjai.</div>
+
+          <div class="form-group">
+            <label>1. Gomb (Elsődleges / Letöltés)</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 6px;">
+              <input type="text" id="btn1-text" value="Frissítés letöltése" oninput="updatePreview()" placeholder="Gomb szövege">
+              <select id="btn1-action" onchange="updatePreview()">
+                <option value="open_url">Link megnyitása (URL)</option>
+                <option value="dismiss">Ablak bezárása</option>
+              </select>
+            </div>
+            <input type="text" id="btn1-url" value="https://github.com/materadetzky/pergamen/releases/latest" oninput="updatePreview()" placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label>2. Gomb (Másodlagos / Bezárás)</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <input type="text" id="btn2-text" value="Később" oninput="updatePreview()" placeholder="Gomb szövege">
+              <select id="btn2-action" onchange="updatePreview()">
+                <option value="dismiss">Ablak bezárása</option>
+                <option value="open_url">Link megnyitása</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🚀 Közzététel & Generált JSON</div>
+          <div class="card-subtitle">Ezt a JSON-t kell bemásolnod a GitHub <code>config/remote_popup.json</code> fájlba, vagy közvetlenül elmentheted.</div>
+          <pre id="json-preview"></pre>
+          <div style="display: flex; gap: 12px; margin-top: 16px;">
+            <button class="btn btn-primary" onclick="copyJSON()">📋 JSON Másolása Vágólapra</button>
+            <a href="https://github.com/materadetzky/pergamen/edit/main/config/remote_popup.json" target="_blank" class="btn btn-secondary">✏️ Megnyitás a GitHub Szerkesztőben</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREVIEW COLUMN -->
+      <div class="preview-container">
+        <div class="card-title" style="margin-bottom: 12px;">📱 Élő Alkalmazás Előnézet</div>
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <div class="phone-backdrop"></div>
+          <div class="phone-sheet">
+            <div class="sheet-handle" id="preview-handle"></div>
+            <div class="sheet-icon-title">
+              <div class="sheet-icon" id="preview-icon">📢</div>
+              <div>
+                <div class="sheet-title" id="preview-title">Cím</div>
+                <div class="sheet-tag" id="preview-tag">Tag</div>
+              </div>
+            </div>
+            <div class="sheet-body" id="preview-message">Szöveg...</div>
+            <div class="sheet-buttons">
+              <div class="sheet-btn sheet-btn-primary" id="preview-btn1">Letöltés</div>
+              <div class="sheet-btn sheet-btn-secondary" id="preview-btn2">Később</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: PUSH NOTIFICATION -->
+    <div id="tab-push" style="display: none;">
+      <div class="card" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-title">🔔 Zárt Appos Push Értesítés Kiküldése</div>
+        <div class="card-subtitle">Küldj értesítést az összes telepített telefonra a beállított Firebase projekt (<code>pergamen-noti</code>) segítségével.</div>
+
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+          <h4 style="color: var(--primary); margin-bottom: 6px;">✅ Firebase Projekt Aktív: pergamen-noti</h4>
+          <p style="font-size: 13px; color: var(--text-muted);">
+            Az appban beállítottuk az automatikus feliratkozást a <code>/topics/all</code> és <code>/topics/updates</code> témakörökre. A Firebase Console felületén 1 kattintással kiküldheted az értesítést zárt telefonokra is!
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Értesítés Címe (Title)</label>
+          <input type="text" id="push-title" value="Új Pergamen verzió elérhető!">
+        </div>
+
+        <div class="form-group">
+          <label>Értesítés Szövege (Body)</label>
+          <textarea id="push-body">Kattints a legfrissebb v1.2.16 BETA letöltéséhez és telepítéséhez!</textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Célcsoport (Topic)</label>
+          <select id="push-topic">
+            <option value="updates">Frissítések (/topics/updates)</option>
+            <option value="all">Minden felhasználó (/topics/all)</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 24px;">
+          <a href="https://console.firebase.google.com/project/pergamen-noti/notification/compose" target="_blank" class="btn btn-primary" style="flex: 1;">
+            🚀 Megnyitás a Firebase Értesítésküldőben
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      if (tab === 'popup') {
+        document.getElementById('tab-popup').style.display = 'grid';
+        document.getElementById('tab-push').style.display = 'none';
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+      } else {
+        document.getElementById('tab-popup').style.display = 'none';
+        document.getElementById('tab-push').style.display = 'block';
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+      }
+    }
+
+    function buildJSON() {
+      const enabled = document.getElementById('popup-enabled').checked;
+      const force = document.getElementById('popup-force').checked;
+      const id = document.getElementById('popup-id').value;
+      const title = document.getElementById('popup-title').value;
+      const tag = document.getElementById('popup-tag').value;
+      const message = document.getElementById('popup-message').value;
+      const platform = document.getElementById('popup-platform').value;
+
+      const btn1Text = document.getElementById('btn1-text').value;
+      const btn1Action = document.getElementById('btn1-action').value;
+      const btn1Url = document.getElementById('btn1-url').value;
+
+      const btn2Text = document.getElementById('btn2-text').value;
+      const btn2Action = document.getElementById('btn2-action').value;
+
+      const buttons = [];
+      if (btn1Text.trim()) {
+        const b = { text: btn1Text, action: btn1Action, primary: true };
+        if (btn1Action === 'open_url' && btn1Url.trim()) b.url = btn1Url.trim();
+        buttons.push(b);
+      }
+      if (btn2Text.trim()) {
+        buttons.push({ text: btn2Text, action: btn2Action, primary: false });
+      }
+
+      const obj = {
+        id: id.trim(),
+        enabled: enabled,
+        title: title.trim(),
+        message: message.trim(),
+        tag: tag.trim() || undefined,
+        platform: platform,
+        force_update: force,
+        buttons: buttons
+      };
+
+      return JSON.stringify(obj, null, 2);
+    }
+
+    function updatePreview() {
+      const jsonStr = buildJSON();
+      document.getElementById('json-preview').innerText = jsonStr;
+
+      const title = document.getElementById('popup-title').value;
+      const tag = document.getElementById('popup-tag').value;
+      const message = document.getElementById('popup-message').value;
+      const force = document.getElementById('popup-force').checked;
+      const btn1Text = document.getElementById('btn1-text').value;
+      const btn2Text = document.getElementById('btn2-text').value;
+
+      document.getElementById('preview-title').innerText = title || 'Cím';
+      document.getElementById('preview-tag').innerText = tag || '';
+      document.getElementById('preview-message').innerText = message || '';
+      document.getElementById('preview-btn1').innerText = btn1Text || 'OK';
+      document.getElementById('preview-btn2').innerText = btn2Text || 'Bezárás';
+
+      document.getElementById('preview-icon').innerText = force ? '⚠️' : '📢';
+      document.getElementById('preview-handle').style.display = force ? 'none' : 'block';
+    }
+
+    function copyJSON() {
+      const jsonStr = buildJSON();
+      navigator.clipboard.writeText(jsonStr).then(() => {
+        alert('✅ JSON sikeresen a vágólapra másolva! Illeszd be a GitHub config/remote_popup.json fájlba.');
+      });
+    }
+
+    updatePreview();
+  </script>
+</body>
+</html>

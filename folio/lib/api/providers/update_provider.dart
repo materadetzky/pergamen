@@ -26,21 +26,19 @@ class UpdateProvider extends ChangeNotifier {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     currentVersion = packageInfo.version;
 
-    if (!Platform.isAndroid) return;
+    if (!Platform.isAndroid && !Platform.isIOS) return;
 
     _releases = await FilcAPI.getReleases() ?? [];
     _releases.sort((a, b) => -a.version.compareTo(b.version));
 
     // Check for new releases
     if (_releases.isNotEmpty) {
-      if (!_releases.first.prerelease) {
-        _available = _releases.first.version
-                .compareTo(Version.fromString(currentVersion)) ==
-            1;
-      }
+      _available = _releases.first.version
+              .compareTo(Version.fromString(currentVersion)) ==
+          1;
 
       // ignore: avoid_print
-      if (_available) print("INFO: New update: ${releases.first.version}");
+      if (_available) print("INFO: New update available: ${releases.first.version}");
       notifyListeners();
     }
   }

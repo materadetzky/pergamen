@@ -67,6 +67,7 @@ jobs:
           mkdir -p build-ipa-standard/Payload
           cp -a folio/build/ios/iphoneos/Runner.app build-ipa-standard/Payload/
           cp folio/ios/Runner/*.png build-ipa-standard/Payload/Runner.app/ 2>/dev/null || true
+          cp folio/ios/Runner/GoogleService-Info.plist build-ipa-standard/Payload/Runner.app/ 2>/dev/null || true
           rm -rf build-ipa-standard/Payload/Runner.app/PlugIns
 
           # Ensure execute permissions on binary and frameworks
@@ -80,7 +81,7 @@ jobs:
           codesign --force --verify --verbose --sign - build-ipa-standard/Payload/Runner.app
 
           cd build-ipa-standard
-          zip -qry -9 ../output/Pergamen-1.2.15-BETA.ipa Payload
+          zip -qry -9 ../output/Pergamen-1.2.16-BETA.ipa Payload
           cd ..
 
           # -------------------------------------------------------------
@@ -90,6 +91,7 @@ jobs:
           mkdir -p build-ipa-full/Payload
           cp -a folio/build/ios/iphoneos/Runner.app build-ipa-full/Payload/
           cp folio/ios/Runner/*.png build-ipa-full/Payload/Runner.app/ 2>/dev/null || true
+          cp folio/ios/Runner/GoogleService-Info.plist build-ipa-full/Payload/Runner.app/ 2>/dev/null || true
 
           chmod -R a+rX build-ipa-full/Payload/Runner.app
           chmod +x build-ipa-full/Payload/Runner.app/Runner
@@ -103,7 +105,7 @@ jobs:
           codesign --force --verify --verbose --sign - build-ipa-full/Payload/Runner.app
 
           cd build-ipa-full
-          zip -qry -9 ../output/Pergamen-1.2.15-BETA-TrollStore.ipa Payload
+          zip -qry -9 ../output/Pergamen-1.2.16-BETA-TrollStore.ipa Payload
           cd ..
 
           ls -lh output/
@@ -111,7 +113,7 @@ jobs:
       - name: Upload IPA Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Pergamen-1.2.15-BETA-iOS
+          name: Pergamen-1.2.16-BETA-iOS
           path: output/*.ipa
           retention-days: 14
 
@@ -181,11 +183,11 @@ jobs:
           cd folio
           flutter build apk --release --flavor github
           mkdir -p ../output-apk
-          cp build/app/outputs/flutter-apk/app-github-release.apk ../output-apk/Pergamen-1.2.15-BETA.apk
+          cp build/app/outputs/flutter-apk/app-github-release.apk ../output-apk/Pergamen-1.2.16-BETA.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Pergamen-1.2.15-BETA-Android
-          path: output-apk/Pergamen-1.2.15-BETA.apk
+          name: Pergamen-1.2.16-BETA-Android
+          path: output-apk/Pergamen-1.2.16-BETA.apk
           retention-days: 14

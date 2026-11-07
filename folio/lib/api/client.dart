@@ -51,7 +51,11 @@ class FilcAPI {
 
   // updates path to github
   static const releases =
-      "https://api.github.com/repos/Zan1456/folio/releases";
+      "https://api.github.com/repos/materadetzky/pergamen/releases";
+
+  // remote in-app popup / announcements endpoint
+  static const remotePopup =
+      "https://raw.githubusercontent.com/materadetzky/pergamen/main/config/remote_popup.json";
 
   // theme sharing api
   static const themeShare = "$baseUrl/theme/";

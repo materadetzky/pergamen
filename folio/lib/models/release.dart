@@ -54,7 +54,10 @@ class Version {
   const Version(this.major, this.minor, this.patch, {this.prerelease = "", this.prever = 0});
 
   factory Version.fromString(String o) {
-    String string = o;
+    String string = o.trim();
+    if (string.startsWith('v') || string.startsWith('V')) {
+      string = string.substring(1);
+    }
     int x = 0, y = 0, z = 0; // major, minor, patch (1.1.1)
     String pre = ""; // prerelease string (-beta)
     int prev = 0; // prerelease version (.1)
