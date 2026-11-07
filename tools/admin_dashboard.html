@@ -3,55 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pergamen Vezérlőpult — Távoli Pop-up & Értesítés Kezelő</title>
+  <title>Pergamen Vezérlőpult — Azonnali Pop-up & Push Kezelő</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="https://materadetzky.github.io/pergamen-web/assets/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
 
   <style>
     :root {
-      --bg-primary: #070b14;
-      --bg-secondary: #0d1527;
-      --bg-card: rgba(15, 23, 42, 0.75);
-      --bg-card-hover: rgba(30, 41, 59, 0.85);
-      --bg-input: rgba(7, 11, 20, 0.85);
+      --bg: #070b14;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --card-border: rgba(59, 130, 246, 0.22);
+      --input-bg: rgba(7, 11, 20, 0.9);
       
       --primary: #38bdf8;
       --primary-blue: #3b82f6;
-      --primary-hover: #0284c7;
       --primary-glow: rgba(56, 189, 248, 0.25);
-      --accent: #6366f1;
-      --danger: #ef4444;
       --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
       
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
       
-      --border: rgba(59, 130, 246, 0.2);
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(56, 189, 248, 0.6);
-      
-      --radius-sm: 8px;
-      --radius-md: 12px;
+      --radius: 12px;
       --radius-lg: 18px;
-      --radius-full: 9999px;
-      
-      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 20px -5px rgba(56, 189, 248, 0.1);
-      --shadow-glow: 0 0 25px rgba(56, 189, 248, 0.25);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     body {
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: var(--bg-primary);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -60,125 +45,79 @@
       overflow-x: hidden;
     }
 
-    /* Background Ambient Glows */
+    /* Ambient lighting */
     .ambient-glow {
       position: fixed;
-      top: 0;
-      left: 50%;
+      top: 0; left: 50%;
       transform: translateX(-50%);
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none; z-index: 0;
       overflow: hidden;
     }
-    .blob-1 {
+    .blob {
       position: absolute;
-      top: -150px;
-      left: 20%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.16) 0%, rgba(56, 189, 248, 0.04) 50%, transparent 70%);
-      filter: blur(80px);
-    }
-    .blob-2 {
-      position: absolute;
-      top: 300px;
-      right: 15%;
-      width: 550px;
-      height: 550px;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+      border-radius: 50%;
       filter: blur(90px);
+      pointer-events: none;
     }
+    .blob-1 { top: -120px; left: 20%; width: 550px; height: 550px; background: radial-gradient(circle, rgba(59, 130, 246, 0.18), transparent 70%); }
+    .blob-2 { top: 300px; right: 15%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(56, 189, 248, 0.12), transparent 70%); }
 
     /* Header */
     header {
-      position: sticky;
-      top: 0;
-      width: 100%;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      background: rgba(7, 11, 20, 0.85);
-      border-bottom: 1px solid var(--border-subtle);
+      position: sticky; top: 0; width: 100%;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      background: rgba(7, 11, 20, 0.88);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 100;
     }
-    .header-container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 14px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .header-inner {
+      max-width: 1240px; margin: 0 auto;
+      padding: 12px 24px;
+      display: flex; align-items: center; justify-content: space-between;
       gap: 16px;
     }
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--text);
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: #fff;
     }
     .brand-logo {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+      width: 36px; height: 36px; border-radius: 10px;
       background: linear-gradient(135deg, #3b82f6, #38bdf8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #070b14;
-      font-size: 20px;
-      overflow: hidden;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; color: #070b14; font-size: 19px;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+      overflow: hidden; flex-shrink: 0;
     }
-    .brand-logo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .brand-logo img { width: 100%; height: 100%; object-fit: cover; }
     .brand-text h1 {
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
+      font-size: 1.1rem; font-weight: 800; letter-spacing: -0.01em;
       background: linear-gradient(135deg, #ffffff 40%, #60a5fa 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       line-height: 1.2;
     }
-    .brand-text p {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      font-weight: 500;
+    .brand-text p { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+
+    .header-actions {
+      display: flex; align-items: center; gap: 12px;
     }
 
+    /* Tabs */
     .nav-tabs {
-      display: flex;
-      background: rgba(15, 23, 42, 0.8);
-      padding: 4px;
-      border-radius: 12px;
-      border: 1px solid var(--border-subtle);
+      display: flex; background: rgba(15, 23, 42, 0.9);
+      padding: 4px; border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
       gap: 4px;
     }
     .tab-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      background: transparent; border: none;
+      color: var(--text-muted); padding: 7px 15px;
+      border-radius: 7px; font-family: inherit;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: all 0.2s ease;
     }
-    .tab-btn:hover {
-      color: var(--text);
-    }
+    .tab-btn:hover { color: #fff; }
     .tab-btn.active {
       background: var(--primary-glow);
       color: var(--primary);
@@ -186,684 +125,466 @@
       box-shadow: 0 2px 8px rgba(56, 189, 248, 0.15);
     }
 
-    /* Main Container */
-    main {
-      flex: 1;
-      max-width: 1280px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 32px 24px 60px 24px;
-      position: relative;
-      z-index: 1;
+    .settings-btn {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text); padding: 7px 14px;
+      border-radius: 8px; font-family: inherit;
+      font-size: 12.5px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .settings-btn:hover {
+      background: rgba(51, 65, 85, 0.9);
+      border-color: rgba(56, 189, 248, 0.4);
     }
 
-    .grid-layout {
+    /* Main Container */
+    main {
+      flex: 1; max-width: 1240px; width: 100%;
+      margin: 0 auto; padding: 24px;
+      position: relative; z-index: 1;
+    }
+
+    .main-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 360px;
-      gap: 32px;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 24px;
       align-items: start;
     }
 
-    @media (max-width: 1024px) {
-      .grid-layout {
-        grid-template-columns: 1fr;
-      }
-      .preview-sticky {
-        order: 2;
-      }
+    @media (max-width: 980px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .preview-col { order: 2; margin-top: 16px; }
     }
 
     /* Cards */
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border-radius: var(--radius-lg);
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow-card);
-      transition: border-color 0.2s;
+      padding: 22px; margin-bottom: 20px;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+      transition: border-color 0.2s ease;
     }
-    .card:hover {
-      border-color: rgba(56, 189, 248, 0.35);
-    }
-    .card:last-child {
-      margin-bottom: 0;
-    }
+    .card:hover { border-color: rgba(56, 189, 248, 0.35); }
+    .card:last-child { margin-bottom: 0; }
 
-    .card-header {
-      margin-bottom: 20px;
-    }
-    .card-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .card-title-row {
+      display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 4px;
     }
-    .card-title .icon-pill {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: var(--primary-glow);
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
+    .card-title {
+      font-size: 1rem; font-weight: 700; color: #fff;
+      display: flex; align-items: center; gap: 8px;
     }
-    .card-subtitle {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-      padding-left: 38px;
+    .card-desc {
+      font-size: 0.8rem; color: var(--text-muted);
+      margin-bottom: 18px; line-height: 1.4;
     }
 
-    /* Form Fields */
-    .form-group {
-      margin-bottom: 18px;
-    }
-    .form-group:last-child {
-      margin-bottom: 0;
-    }
+    /* Form Inputs */
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-child { margin-bottom: 0; }
+    
     label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: #cbd5e1;
-      margin-bottom: 7px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12.5px; font-weight: 600; color: #cbd5e1;
+      margin-bottom: 6px;
     }
+    .label-tag { font-size: 11px; color: var(--text-dim); font-weight: 400; }
+    
     .hint {
-      font-size: 11.5px;
-      color: var(--text-dim);
-      margin-top: 5px;
-      line-height: 1.4;
+      font-size: 11.5px; color: var(--text-dim);
+      margin-top: 4px; line-height: 1.35;
     }
 
     input[type="text"], textarea, select {
-      width: 100%;
-      height: 44px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 0 14px;
-      font-family: inherit;
-      font-size: 13.5px;
-      color: var(--text);
-      outline: none;
-      transition: all 0.2s;
+      width: 100%; height: 42px;
+      background: var(--input-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px; padding: 0 14px;
+      font-family: inherit; font-size: 13.5px;
+      color: var(--text); outline: none;
+      transition: all 0.2s ease;
     }
     input[type="text"]:focus, textarea:focus, select:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
     }
     textarea {
-      height: auto;
-      min-height: 105px;
-      padding: 12px 14px;
-      resize: vertical;
-      line-height: 1.5;
+      height: auto; min-height: 95px; padding: 10px 14px;
+      resize: vertical; line-height: 1.45;
     }
     select {
-      appearance: none;
-      -webkit-appearance: none;
+      appearance: none; -webkit-appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 38px;
-      cursor: pointer;
+      background-repeat: no-repeat; background-position: right 14px center;
+      padding-right: 36px; cursor: pointer;
     }
 
-    .input-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .form-grid-2 {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
     }
-    @media (max-width: 600px) {
-      .input-grid {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 580px) {
+      .form-grid-2 { grid-template-columns: 1fr; }
     }
 
-    /* Switch Rows */
+    /* Switches */
     .switch-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      background: rgba(7, 11, 20, 0.6);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      margin-bottom: 14px;
-      gap: 16px;
-      transition: border-color 0.2s;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; background: rgba(7, 11, 20, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 10px; margin-bottom: 12px; gap: 14px;
     }
-    .switch-row:hover {
-      border-color: rgba(56, 189, 248, 0.2);
-    }
-    .switch-info h4 {
-      font-size: 13.5px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 2px;
-    }
-    .switch-info p {
-      font-size: 11.5px;
-      color: var(--text-muted);
-    }
+    .switch-info h4 { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+    .switch-info p { font-size: 11.5px; color: var(--text-muted); }
     .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-      flex-shrink: 0;
+      position: relative; display: inline-block;
+      width: 42px; height: 22px; flex-shrink: 0;
     }
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #334155;
-      transition: .25s;
-      border-radius: 24px;
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #334155; transition: .2s; border-radius: 22px;
     }
     .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .25s;
-      border-radius: 50%;
+      position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+      background-color: white; transition: .2s; border-radius: 50%;
     }
     input:checked + .slider {
       background: linear-gradient(135deg, #3b82f6, #38bdf8);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
     }
-    input:checked + .slider:before {
-      transform: translateX(20px);
-    }
+    input:checked + .slider:before { transform: translateX(20px); }
 
     /* Buttons */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      height: 44px;
-      padding: 0 20px;
-      border-radius: var(--radius-md);
-      font-family: inherit;
-      font-size: 13.5px;
-      font-weight: 600;
-      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; height: 44px; padding: 0 18px;
+      border-radius: 10px; font-family: inherit; font-size: 13.5px;
+      font-weight: 600; cursor: pointer;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      border: 1px solid transparent;
-      text-decoration: none;
+      border: 1px solid transparent; text-decoration: none;
     }
-    .btn-primary {
-      background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
-      color: #070b14;
-      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+    .btn-send {
+      width: 100%; height: 50px;
+      background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+      color: #070b14; font-size: 15px; font-weight: 800;
+      box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35);
+      border-radius: 12px; margin-top: 18px;
     }
-    .btn-primary:hover {
-      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+    .btn-send:hover {
+      box-shadow: 0 6px 24px rgba(56, 189, 248, 0.55);
       transform: translateY(-1px);
     }
+    .btn-send:active { transform: translateY(0); }
+    .btn-send:disabled {
+      opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none;
+    }
+
     .btn-secondary {
-      background: rgba(30, 41, 59, 0.8);
-      color: var(--text);
-      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(30, 41, 59, 0.7);
+      color: var(--text); border-color: rgba(255, 255, 255, 0.1);
     }
     .btn-secondary:hover {
-      background: rgba(51, 65, 85, 0.9);
-      border-color: rgba(255, 255, 255, 0.25);
-      transform: translateY(-1px);
+      background: rgba(51, 65, 85, 0.85);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
-    /* Code area */
-    pre {
-      background: rgba(7, 11, 20, 0.9);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
+    /* Status Banner */
+    .status-banner {
+      display: none; padding: 12px 14px; border-radius: 10px;
+      margin-top: 14px; font-size: 13px; font-weight: 500;
+      line-height: 1.4; animation: fadeIn 0.2s ease;
+    }
+    .status-banner.success {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+    .status-banner.error {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+    .status-banner.loading {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.4);
       color: #38bdf8;
-      overflow-x: auto;
-      max-height: 240px;
-      line-height: 1.5;
     }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Phone Mockup (Sticky Right Column) */
-    .preview-sticky {
-      position: sticky;
-      top: 86px;
+    /* Phone Mockup Column */
+    .preview-col {
+      position: sticky; top: 76px;
     }
     .preview-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: var(--radius-lg);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: var(--shadow-card);
+      padding: 16px; display: flex; flex-direction: column; align-items: center;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.6);
     }
-    .preview-header {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-subtle);
+    .preview-header-bar {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .preview-header-title {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .preview-badge {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: var(--radius-full);
-      background: var(--primary-glow);
-      color: var(--primary);
+    .preview-title-text { font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px; }
+    .preview-badge-pill {
+      font-size: 10.5px; font-weight: 700; padding: 2px 8px;
+      border-radius: 9999px; background: var(--primary-glow); color: var(--primary);
       border: 1px solid rgba(56, 189, 248, 0.3);
     }
 
-    .phone-mockup {
-      width: 320px;
-      height: 640px;
-      background: #0a0f1d;
-      border: 8px solid #1e293b;
-      border-radius: 42px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.12);
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+    /* Phone Device Screen */
+    .phone-device {
+      width: 290px; height: 570px;
+      background: #090e18;
+      border: 7px solid #1e293b;
+      border-radius: 38px;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+      box-shadow: 0 20px 40px -10px rgba(0,0,0,0.8), 0 0 25px rgba(56, 189, 248, 0.1);
       user-select: none;
     }
 
-    /* Phone Dynamic Island / Notch */
-    .phone-island {
-      position: absolute;
-      top: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 96px;
-      height: 22px;
-      background: #000;
-      border-radius: 20px;
-      z-index: 50;
+    /* Island */
+    .phone-notch {
+      position: absolute; top: 6px; left: 50%;
+      transform: translateX(-50%); width: 84px; height: 18px;
+      background: #000; border-radius: 12px; z-index: 50;
       border: 1px solid #1e293b;
     }
 
-    /* Phone Status Bar */
-    .phone-status-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 22px;
-      font-size: 11px;
-      font-weight: 700;
-      color: #fff;
+    /* Status bar */
+    .phone-top-bar {
+      position: absolute; top: 0; left: 0; right: 0; height: 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 18px; font-size: 10.5px; font-weight: 700; color: #fff;
       z-index: 40;
     }
-    .phone-status-right {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
+    .phone-top-icons { display: flex; gap: 4px; align-items: center; }
 
-    /* --- Phone Screen 1: App Background & Bottom Sheet --- */
-    .screen-popup {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
+    /* Popup Screen (Flutter Bottom Sheet Simulation) */
+    .phone-screen-popup {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; justify-content: flex-end;
     }
-    /* Simulated App Behind Bottom Sheet */
-    .simulated-app {
-      position: absolute;
-      inset: 0;
+    .dummy-bg-app {
+      position: absolute; inset: 0;
       background: linear-gradient(180deg, #090e1a 0%, #0d1527 100%);
-      padding: 48px 16px 16px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      padding: 40px 14px 14px 14px;
+      display: flex; flex-direction: column; gap: 10px;
     }
-    .dummy-app-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+    .dummy-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .dummy-h { font-size: 12px; font-weight: 800; color: #fff; }
+    .dummy-box {
+      background: rgba(30, 41, 59, 0.35); border-radius: 10px;
+      padding: 8px; display: flex; flex-direction: column; gap: 5px;
     }
-    .dummy-logo {
-      font-size: 13px;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.01em;
-    }
-    .dummy-card {
-      background: rgba(30, 41, 59, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .dummy-line {
-      height: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      width: 70%;
-    }
-    .dummy-line.short { width: 40%; }
-    .dummy-line.full { width: 90%; }
+    .dummy-bar { height: 7px; background: rgba(255,255,255,0.08); border-radius: 4px; width: 65%; }
 
-    /* Dimmed Backdrop */
-    .phone-backdrop {
-      position: absolute;
-      inset: 0;
+    .phone-dim {
+      position: absolute; inset: 0;
       background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
       z-index: 10;
     }
 
-    /* Actual Bottom Sheet */
-    .phone-sheet {
-      position: relative;
-      background: #111827;
-      border-top-left-radius: 26px;
-      border-top-right-radius: 26px;
-      padding: 14px 18px 20px 18px;
+    /* Exact Flutter RemotePopupDialog replica */
+    .flutter-dialog {
+      position: relative; z-index: 20;
+      background: #172033;
+      border-radius: 22px;
+      margin: 0 12px 14px 12px;
+      padding: 14px 14px 16px 14px;
       border: 1px solid rgba(56, 189, 248, 0.25);
-      border-bottom: none;
-      z-index: 20;
-      box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.6);
-      transform: translateY(0);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
     }
-    .sheet-handle {
-      width: 36px;
-      height: 4px;
-      background: #374151;
-      border-radius: 2px;
-      margin: 0 auto 12px auto;
+    .dialog-handle {
+      width: 32px; height: 3.5px; background: #334155;
+      border-radius: 2px; margin: 0 auto 10px auto;
     }
-    .sheet-header-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
+    .dialog-header {
+      display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;
     }
-    .sheet-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+    .dialog-icon {
+      width: 38px; height: 38px; border-radius: 11px;
       background: var(--primary-glow);
       border: 1px solid rgba(56, 189, 248, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
     }
-    .sheet-title-col {
-      flex: 1;
-      min-width: 0;
+    .dialog-title-col { flex: 1; min-width: 0; }
+    .dialog-title {
+      font-size: 13px; font-weight: 700; color: #fff; line-height: 1.25;
     }
-    .sheet-title {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1.25;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .dialog-tag {
+      font-size: 10px; font-weight: 600; color: var(--primary); margin-top: 2px;
     }
-    .sheet-tag {
-      font-size: 10.5px;
-      font-weight: 600;
-      color: var(--primary);
+    .dialog-body {
+      background: rgba(11, 17, 30, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px; padding: 10px;
+      font-size: 11px; line-height: 1.45; color: #cbd5e1;
+      margin-bottom: 12px; white-space: pre-wrap;
+      max-height: 150px; overflow-y: auto;
     }
-    .sheet-body {
-      background: rgba(17, 24, 39, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 11px 12px;
-      font-size: 11.5px;
-      line-height: 1.45;
-      color: #cbd5e1;
-      margin-bottom: 14px;
-      white-space: pre-wrap;
-      max-height: 190px;
-      overflow-y: auto;
+    .dialog-buttons {
+      display: flex; gap: 6px;
     }
-    .sheet-buttons {
-      display: flex;
-      gap: 8px;
+    .dialog-btn {
+      flex: 1; padding: 8px 6px; border-radius: 9px;
+      font-size: 11.5px; font-weight: 700; text-align: center;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
-    .sheet-btn {
-      flex: 1;
-      padding: 9px 10px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 700;
-      text-align: center;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .sheet-btn-primary {
+    .dialog-btn-primary {
       background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
       color: #070b14;
     }
-    .sheet-btn-secondary {
-      background: #1f2937;
-      color: #94a3b8;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .dialog-btn-secondary {
+      background: rgba(30, 41, 59, 0.8);
+      color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    /* --- Phone Screen 2: Lock Screen Push Notification --- */
-    .screen-push {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at top, #1e3a8a 0%, #070b14 70%);
-      padding: 50px 16px 20px 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    /* Lockscreen Screen (Push Simulation) */
+    .phone-screen-push {
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at top, #1e3a8a 0%, #070b14 75%);
+      padding: 42px 14px 16px 14px;
+      display: flex; flex-direction: column; align-items: center;
     }
-    .lock-time {
-      font-size: 48px;
-      font-weight: 300;
-      color: #fff;
-      margin-top: 18px;
-      line-height: 1;
-      letter-spacing: -0.02em;
+    .lock-clock {
+      font-size: 42px; font-weight: 300; color: #fff;
+      margin-top: 14px; line-height: 1;
     }
-    .lock-date {
-      font-size: 12.5px;
-      font-weight: 500;
-      color: #cbd5e1;
-      margin-top: 6px;
-      margin-bottom: 30px;
+    .lock-calendar {
+      font-size: 11.5px; font-weight: 500; color: #cbd5e1;
+      margin-top: 5px; margin-bottom: 24px;
     }
-    .push-card {
-      width: 100%;
-      background: rgba(30, 41, 59, 0.75);
+    .ios-notification {
+      width: 100%; background: rgba(30, 41, 59, 0.75);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border-radius: 18px;
-      padding: 12px 14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      animation: pushSlide 0.3s ease-out;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-radius: 16px; padding: 11px 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
-    @keyframes pushSlide {
-      from { transform: translateY(-10px) scale(0.96); opacity: 0; }
-      to { transform: translateY(0) scale(1); opacity: 1; }
+    .noti-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 5px;
     }
-    .push-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
-    .push-app-info {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-    .push-app-icon {
-      width: 20px;
-      height: 20px;
-      border-radius: 6px;
+    .noti-app { display: flex; align-items: center; gap: 6px; }
+    .noti-icon {
+      width: 18px; height: 18px; border-radius: 5px;
       background: linear-gradient(135deg, #3b82f6, #38bdf8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 800;
-      color: #070b14;
+      color: #070b14; font-size: 10px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
     }
-    .push-app-name {
-      font-size: 11.5px;
-      font-weight: 700;
-      color: #e2e8f0;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-    .push-time {
-      font-size: 10.5px;
-      color: #94a3b8;
-    }
-    .push-title-text {
-      font-size: 12.5px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 3px;
-    }
-    .push-body-text {
-      font-size: 11.5px;
-      color: #cbd5e1;
-      line-height: 1.4;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    .noti-name { font-size: 11px; font-weight: 700; color: #e2e8f0; text-transform: uppercase; }
+    .noti-time { font-size: 10px; color: #94a3b8; }
+    .noti-title { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .noti-body {
+      font-size: 11px; color: #cbd5e1; line-height: 1.35;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
     }
 
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: #0f172a;
-      border: 1px solid var(--primary);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7), 0 0 20px rgba(56, 189, 248, 0.3);
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: var(--radius-full);
-      font-size: 13.5px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      z-index: 1000;
-      opacity: 0;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: none;
+    /* Modal Backdrop & Dialog */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 1000; padding: 20px;
     }
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
+    .modal-box {
+      background: #0f172a; border: 1px solid var(--primary);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(56, 189, 248, 0.2);
+      border-radius: var(--radius-lg); max-width: 580px; width: 100%;
+      padding: 24px; animation: fadeIn 0.2s ease;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .modal-close {
+      background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;
+    }
+    .modal-close:hover { color: #fff; }
+
+    /* Drop zone */
+    .file-dropzone {
+      border: 2px dashed rgba(56, 189, 248, 0.4);
+      border-radius: 10px; padding: 18px; text-align: center;
+      background: rgba(56, 189, 248, 0.04); cursor: pointer;
+      transition: all 0.2s; margin-top: 6px;
+    }
+    .file-dropzone:hover {
+      border-color: var(--primary); background: rgba(56, 189, 248, 0.08);
     }
   </style>
 </head>
 <body>
 
-  <!-- Ambient Blue Background Aura -->
   <div class="ambient-glow" aria-hidden="true">
-    <div class="blob-1"></div>
-    <div class="blob-2"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
   </div>
 
   <!-- Header -->
   <header>
-    <div class="header-container">
-      <a href="https://materadetzky.github.io/pergamen-web/" class="brand">
+    <div class="header-inner">
+      <a href="index.html" class="brand">
         <div class="brand-logo">
-          <img src="https://materadetzky.github.io/pergamen-web/assets/logo.png" alt="Pergamen Logo" onerror="this.style.display='none'; this.parentElement.innerText='P';">
+          <img src="assets/logo.png" alt="P" onerror="this.style.display='none'; this.parentElement.innerText='P';">
         </div>
         <div class="brand-text">
           <h1>Pergamen Vezérlőpult</h1>
-          <p>Távoli In-App Pop-up és Push Értesítés Kezelő</p>
+          <p>Azonnali Pop-up & Értesítés Kezelő</p>
         </div>
       </a>
 
-      <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('popup')">
-          <span>📱</span> In-App Pop-up
-        </button>
-        <button class="tab-btn" onclick="switchTab('push')">
-          <span>🔔</span> Push Értesítés
+      <div class="header-actions">
+        <div class="nav-tabs">
+          <button class="tab-btn active" id="btn-tab-popup" onclick="switchTab('popup')">
+            <span>📱</span> Pop-up
+          </button>
+          <button class="tab-btn" id="btn-tab-push" onclick="switchTab('push')">
+            <span>🔔</span> Push Értesítés
+          </button>
+        </div>
+
+        <button class="settings-btn" onclick="openSettingsModal()">
+          <span>⚙️</span> API Kulcsok
+          <span id="badge-api-status" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
+  <!-- Main Body -->
   <main>
-    <div class="grid-layout">
+    <div class="main-grid">
       
-      <!-- LEFT COLUMN: CONTROLS & FORMS -->
-      <div class="controls-column">
+      <!-- CONTROLS COLUMN -->
+      <div class="controls-col">
         
-        <!-- ==================== TAB 1: IN-APP POPUP ==================== -->
-        <div id="tab-popup-content">
+        <!-- ================= TAB 1: IN-APP POPUP ================= -->
+        <div id="view-popup">
           <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon-pill">✨</span>
-                Pop-up Viselkedés és Állapot
-              </div>
-              <div class="card-subtitle">Állítsd be a felugró ablak megjelenítését, azonosítóját és típusát.</div>
+            <div class="card-title-row">
+              <div class="card-title">✨ Pop-up Állapot & Verzió</div>
             </div>
+            <div class="card-desc">Határozd meg, hogy megjelenjen-e az ablak és kötelező-e a frissítés.</div>
 
             <div class="switch-row">
               <div class="switch-info">
                 <h4>Pop-up Bekapcsolva (Enabled)</h4>
-                <p>Ha aktív, az alkalmazás indításakor minden felhasználónak megjelenik.</p>
+                <p>Ha be van kapcsolva, az app indításakor automatikusan felugrik.</p>
               </div>
               <label class="switch">
                 <input type="checkbox" id="popup-enabled" checked onchange="updatePreview()">
@@ -873,8 +594,8 @@
 
             <div class="switch-row">
               <div class="switch-info">
-                <h4>Kényszerített frissítés (Force Update)</h4>
-                <p>Nem zárható be a gomb nélkül (kritikus javításokhoz és kötelező verziókhoz).</p>
+                <h4>Kényszerített Frissítés (Force Update)</h4>
+                <p>Nem zárható be a gomb nélkül (kötelező frissítéshez).</p>
               </div>
               <label class="switch">
                 <input type="checkbox" id="popup-force" onchange="updatePreview()">
@@ -882,11 +603,11 @@
               </label>
             </div>
 
-            <div class="input-grid" style="margin-top: 18px;">
+            <div class="form-grid-2" style="margin-top: 14px;">
               <div class="form-group">
-                <label>Egyedi Azonosító (ID)</label>
+                <label>Egyedi Azonosító (ID) <span class="label-tag">Kötelező</span></label>
                 <input type="text" id="popup-id" value="update_v1_2_16" oninput="updatePreview()" placeholder="pl. update_v1_2_16">
-                <div class="hint">Ha új ID-t adsz meg, az ablak újra felugrik azoknak is, akik korábban bezárták.</div>
+                <div class="hint">Új ID esetén az ablak újra megjelenik azoknak is, akik bezárták.</div>
               </div>
               <div class="form-group">
                 <label>Célzott Platform</label>
@@ -895,54 +616,48 @@
                   <option value="android">Csak Android</option>
                   <option value="ios">Csak iOS</option>
                 </select>
-                <div class="hint">Kiválaszthatod, hogy melyik operációs rendszeren jelenjen meg.</div>
+                <div class="hint">Kiválaszthatod, hogy melyik rendszeren jelenjen meg.</div>
               </div>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon-pill">📝</span>
-                Tartalom és Szövegezés
-              </div>
-              <div class="card-subtitle">Az ablak címe, címkéje és a részletes leírás Markdown támogatással.</div>
+            <div class="card-title-row">
+              <div class="card-title">📝 Pop-up Szövegezése</div>
             </div>
+            <div class="card-desc">A felugró ablak fejléce, verziócímkéje és formázott leírása.</div>
 
-            <div class="input-grid">
+            <div class="form-grid-2">
               <div class="form-group">
                 <label>Cím (Title)</label>
-                <input type="text" id="popup-title" value="🎉 Új Pergamen verzió elérhető!" oninput="updatePreview()" placeholder="A felugró ablak főcíme">
+                <input type="text" id="popup-title" value="🎉 Új Pergamen verzió elérhető!" oninput="updatePreview()" placeholder="pl. Új frissítés elérhető!">
               </div>
               <div class="form-group">
-                <label>Címke / Verziószám (Tag)</label>
+                <label>Verziócímke (Tag)</label>
                 <input type="text" id="popup-tag" value="v1.2.16 BETA" oninput="updatePreview()" placeholder="pl. v1.2.16 BETA">
               </div>
             </div>
 
             <div class="form-group">
-              <label>Leírás / Újdonságok (Markdown és emojik használhatók)</label>
+              <label>Leírás / Újdonságok (Markdown és emojik)</label>
               <textarea id="popup-message" oninput="updatePreview()">Megjelent a Pergamen v1.2.16!
 
 • Új távoli értesítések és in-app pop-up rendszer
 • Javított kezdőképernyő ikonváltás iOS és Android rendszereken
 • Hibajavítások és sebességoptimalizálás</textarea>
-              <div class="hint">Formázhatsz vastag betűvel (**kiemelt**) vagy listajelekkel (• pontok).</div>
+              <div class="hint">Használhatsz vastag betűt (**szöveg**) és felsorolást (• pontok).</div>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon-pill">🔘</span>
-                Gombok Testreszabása
-              </div>
-              <div class="card-subtitle">Határozd meg a cselekvési gombok feliratát, típusát és cél URL-jét.</div>
+            <div class="card-title-row">
+              <div class="card-title">🔘 Gombok Testreszabása</div>
             </div>
+            <div class="card-desc">Állítsd be a cselekvési gombok feliratát, műveletét és cél URL-jét.</div>
 
-            <div class="form-group">
-              <label>1. Gomb (Elsődleges / Letöltés)</label>
-              <div class="input-grid" style="margin-bottom: 8px;">
+            <div class="form-group" style="padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 14px;">
+              <label>1. Gomb (Elsődleges Gomb)</label>
+              <div class="form-grid-2" style="margin-bottom: 8px;">
                 <input type="text" id="btn1-text" value="Frissítés letöltése" oninput="updatePreview()" placeholder="Gomb szövege">
                 <select id="btn1-action" onchange="updatePreview()">
                   <option value="open_url">Link megnyitása (URL)</option>
@@ -953,58 +668,53 @@
             </div>
 
             <div class="form-group">
-              <label>2. Gomb (Másodlagos / Elvetés)</label>
-              <div class="input-grid">
-                <input type="text" id="btn2-text" value="Később" oninput="updatePreview()" placeholder="Gomb szövege (üresen hagyva elrejtve)">
+              <label>2. Gomb (Másodlagos Gomb — elrejthető)</label>
+              <div class="form-grid-2" style="margin-bottom: 8px;">
+                <input type="text" id="btn2-text" value="Később" oninput="updatePreview()" placeholder="Gomb szövege (üresen rejtve)">
                 <select id="btn2-action" onchange="updatePreview()">
                   <option value="dismiss">Ablak bezárása</option>
                   <option value="open_url">Link megnyitása (URL)</option>
                 </select>
               </div>
+              <input type="text" id="btn2-url" value="" oninput="updatePreview()" placeholder="https://... (ha linket nyit meg)">
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon-pill">🚀</span>
-                Generált Konfiguráció & Közzététel
-              </div>
-              <div class="card-subtitle">Másold ki az alábbi JSON-t és illeszd be a GitHub repó <code>config/remote_popup.json</code> fájljába.</div>
+          <!-- SEND / PUBLISH BUTTON -->
+          <div class="card" style="border-color: rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.95);">
+            <div class="card-title-row">
+              <div class="card-title">🚀 Pop-up Élesítése Azonnal</div>
             </div>
+            <div class="card-desc">1 kattintással közvetlenül menti a GitHub konfigurációt, azonnal élesítve minden felhasználónál.</div>
 
-            <pre id="json-preview"></pre>
+            <button class="btn btn-send" id="btn-publish-popup" onclick="publishPopupDirectly()">
+              <span>🚀</span> Pop-up Élesítése Azonnal (1 Kattintás)
+            </button>
 
-            <div style="display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap;">
-              <button class="btn btn-primary" onclick="copyJSON()">📋 JSON Másolása Vágólapra</button>
-              <a href="https://github.com/materadetzky/pergamen/edit/main/config/remote_popup.json" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">✏️ Megnyitás GitHub Szerkesztőben</a>
-            </div>
+            <div class="status-banner" id="status-popup"></div>
           </div>
         </div>
 
-        <!-- ==================== TAB 2: PUSH NOTIFICATIONS ==================== -->
-        <div id="tab-push-content" style="display: none;">
+        <!-- ================= TAB 2: PUSH NOTIFICATIONS ================= -->
+        <div id="view-push" style="display: none;">
           <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span class="icon-pill">🔔</span>
-                Zárt Appos Push Értesítés
-              </div>
-              <div class="card-subtitle">Küldj azonnali rendszerértesítést zárt és háttérben futó alkalmazásokra.</div>
+            <div class="card-title-row">
+              <div class="card-title">🔔 Rendszer Push Értesítés</div>
             </div>
+            <div class="card-desc">Küldj azonnali Push értesítést minden telepített Android és iOS készülékre, még zárt app esetén is.</div>
 
-            <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 16px; margin-bottom: 22px;">
-              <div style="display: flex; align-items: center; gap: 8px; color: var(--primary); font-weight: 700; font-size: 13.5px; margin-bottom: 4px;">
-                <span>⚡</span> Firebase Projekt Csatlakoztatva: <code>pergamen-noti</code>
+            <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;">
+              <div style="color: var(--primary); font-weight: 700; font-size: 13px; margin-bottom: 3px;">
+                ⚡ Célzott Csatorna: <code>/topics/updates</code> és <code>/topics/all</code>
               </div>
-              <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.45;">
-                Az összes Pergamen v1.2.16+ kliens automatikusan feliratkozik a <code>/topics/all</code> és <code>/topics/updates</code> témakörökre. A Firebase felületén elküldött értesítések zárt telefonokon is azonnal megjelennek.
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                Az összes Pergamen v1.2.16+ kliens automatikusan fel van iratkozva ezekre a témakörökre. A kiküldött értesítés zárolási képernyőn is megjelenik.
               </p>
             </div>
 
             <div class="form-group">
               <label>Értesítés Címe (Title)</label>
-              <input type="text" id="push-title" value="Új Pergamen verzió elérhető!" oninput="updatePushPreview()" placeholder="pl. Új Pergamen verzió elérhető!">
+              <input type="text" id="push-title" value="🎉 Új Pergamen verzió elérhető!" oninput="updatePushPreview()" placeholder="pl. Új Pergamen verzió elérhető!">
             </div>
 
             <div class="form-group">
@@ -1012,7 +722,7 @@
               <textarea id="push-body" oninput="updatePushPreview()" placeholder="pl. Kattints a frissítés letöltéséhez és telepítéséhez!">Kattints a legfrissebb v1.2.16 BETA letöltéséhez és telepítéséhez!</textarea>
             </div>
 
-            <div class="input-grid">
+            <div class="form-grid-2">
               <div class="form-group">
                 <label>Célcsoport (Topic)</label>
                 <select id="push-topic">
@@ -1026,43 +736,41 @@
               </div>
             </div>
 
-            <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
-              <a href="https://console.firebase.google.com/project/pergamen-noti/notification/compose" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="flex: 1;">
-                🚀 Megnyitás a Firebase Értesítésküldőben
-              </a>
-              <button class="btn btn-secondary" onclick="copyPushDetails()">📋 Szöveg Másolása</button>
-            </div>
+            <!-- SEND PUSH BUTTON -->
+            <button class="btn btn-send" id="btn-send-push" onclick="sendPushDirectly()" style="background: linear-gradient(135deg, #10b981 0%, #38bdf8 100%);">
+              <span>🔔</span> Push Értesítés Kiküldése Most (1 Kattintás)
+            </button>
+
+            <div class="status-banner" id="status-push"></div>
           </div>
         </div>
 
       </div>
 
-      <!-- RIGHT COLUMN: REALISTIC STICKY PHONE MOCKUP -->
-      <div class="preview-sticky">
+      <!-- RIGHT PREVIEW COLUMN -->
+      <div class="preview-col">
         <div class="preview-card">
-          <div class="preview-header">
-            <div class="preview-header-title">
+          <div class="preview-header-bar">
+            <div class="preview-title-text">
               <span>📱</span>
-              <span id="preview-mode-title">Élő Alkalmazás Előnézet</span>
+              <span id="preview-col-title">Pop-up Előnézet</span>
             </div>
-            <span class="preview-badge" id="preview-mode-badge">In-App Pop-up</span>
+            <span class="preview-badge-pill" id="preview-col-badge">Élő Telefon</span>
           </div>
 
-          <div class="phone-mockup">
-            <!-- Dynamic Island -->
-            <div class="phone-island"></div>
-
-            <!-- Status Bar -->
-            <div class="phone-status-bar">
+          <div class="phone-device">
+            <div class="phone-notch"></div>
+            
+            <div class="phone-top-bar">
               <span>09:41</span>
-              <div class="phone-status-right">
-                <svg width="14" height="12" viewBox="0 0 16 12" fill="currentColor">
+              <div class="phone-top-icons">
+                <svg width="12" height="10" viewBox="0 0 16 12" fill="currentColor">
                   <path d="M0 10h2V6H0v4zm3 0h2V4H3v6zm3 0h2V2H6v8zm3 0h2V0H9v10zm3 0h2v-8h-2v8z"/>
                 </svg>
-                <svg width="14" height="12" viewBox="0 0 16 12" fill="currentColor">
+                <svg width="12" height="10" viewBox="0 0 16 12" fill="currentColor">
                   <path d="M8 2c-3.1 0-5.8 1.4-7.6 3.6l7.6 8.4 7.6-8.4C13.8 3.4 11.1 2 8 2z"/>
                 </svg>
-                <svg width="18" height="12" viewBox="0 0 24 12" fill="currentColor">
+                <svg width="15" height="10" viewBox="0 0 24 12" fill="currentColor">
                   <rect x="1" y="1" width="18" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
                   <rect x="3" y="3" width="12" height="6" rx="1.5"/>
                   <path d="M21 4v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -1070,65 +778,59 @@
               </div>
             </div>
 
-            <!-- SCREEN 1: IN-APP POPUP -->
-            <div class="screen-popup" id="screen-popup">
-              <!-- Background App Screen -->
-              <div class="simulated-app">
-                <div class="dummy-app-bar">
-                  <div class="dummy-logo">Pergamen</div>
-                  <div class="dummy-line short" style="height: 6px;"></div>
+            <!-- POPUP PREVIEW -->
+            <div class="phone-screen-popup" id="preview-screen-popup">
+              <div class="dummy-bg-app">
+                <div class="dummy-top">
+                  <div class="dummy-h">Pergamen</div>
+                  <div class="dummy-bar" style="width: 30%;"></div>
                 </div>
-                <div class="dummy-card" style="margin-top: 8px;">
-                  <div class="dummy-line"></div>
-                  <div class="dummy-line full"></div>
-                  <div class="dummy-line short"></div>
+                <div class="dummy-box">
+                  <div class="dummy-bar"></div>
+                  <div class="dummy-bar" style="width: 90%;"></div>
+                  <div class="dummy-bar" style="width: 45%;"></div>
                 </div>
-                <div class="dummy-card">
-                  <div class="dummy-line full"></div>
-                  <div class="dummy-line short"></div>
-                </div>
-                <div class="dummy-card">
-                  <div class="dummy-line"></div>
-                  <div class="dummy-line short"></div>
+                <div class="dummy-box">
+                  <div class="dummy-bar" style="width: 80%;"></div>
+                  <div class="dummy-bar" style="width: 50%;"></div>
                 </div>
               </div>
 
-              <!-- Dimmed Backdrop -->
-              <div class="phone-backdrop"></div>
+              <div class="phone-dim"></div>
 
-              <!-- Animated Bottom Sheet -->
-              <div class="phone-sheet">
-                <div class="sheet-handle" id="preview-handle"></div>
-                <div class="sheet-header-row">
-                  <div class="sheet-icon" id="preview-icon">📢</div>
-                  <div class="sheet-title-col">
-                    <div class="sheet-title" id="preview-title">Cím betöltése...</div>
-                    <div class="sheet-tag" id="preview-tag">v1.2.16</div>
+              <!-- Dialog -->
+              <div class="flutter-dialog">
+                <div class="dialog-handle" id="preview-handle"></div>
+                <div class="dialog-header">
+                  <div class="dialog-icon" id="preview-icon">📢</div>
+                  <div class="dialog-title-col">
+                    <div class="dialog-title" id="preview-title">Cím...</div>
+                    <div class="dialog-tag" id="preview-tag">Tag</div>
                   </div>
                 </div>
-                <div class="sheet-body" id="preview-message">Üzenet tartalma...</div>
-                <div class="sheet-buttons">
-                  <div class="sheet-btn sheet-btn-primary" id="preview-btn1">Letöltés</div>
-                  <div class="sheet-btn sheet-btn-secondary" id="preview-btn2">Később</div>
+                <div class="dialog-body" id="preview-message">Szöveg...</div>
+                <div class="dialog-buttons">
+                  <div class="dialog-btn dialog-btn-primary" id="preview-btn1">Letöltés</div>
+                  <div class="dialog-btn dialog-btn-secondary" id="preview-btn2">Később</div>
                 </div>
               </div>
             </div>
 
-            <!-- SCREEN 2: LOCK SCREEN PUSH NOTIFICATION -->
-            <div class="screen-push" id="screen-push" style="display: none;">
-              <div class="lock-time">09:41</div>
-              <div class="lock-date">Kedd, november 7.</div>
+            <!-- PUSH PREVIEW -->
+            <div class="phone-screen-push" id="preview-screen-push" style="display: none;">
+              <div class="lock-clock">09:41</div>
+              <div class="lock-calendar">Kedd, november 7.</div>
 
-              <div class="push-card">
-                <div class="push-header">
-                  <div class="push-app-info">
-                    <div class="push-app-icon">P</div>
-                    <span class="push-app-name">Pergamen</span>
+              <div class="ios-notification">
+                <div class="noti-top">
+                  <div class="noti-app">
+                    <div class="noti-icon">P</div>
+                    <span class="noti-name">Pergamen</span>
                   </div>
-                  <span class="push-time">most</span>
+                  <span class="noti-time">most</span>
                 </div>
-                <div class="push-title-text" id="preview-push-title">Új Pergamen verzió elérhető!</div>
-                <div class="push-body-text" id="preview-push-body">Kattints a legfrissebb v1.2.16 BETA letöltéséhez és telepítéséhez!</div>
+                <div class="noti-title" id="preview-push-title">Új Pergamen verzió elérhető!</div>
+                <div class="noti-body" id="preview-push-body">Kattints a legfrissebb v1.2.16 BETA letöltéséhez!</div>
               </div>
             </div>
 
@@ -1139,98 +841,210 @@
     </div>
   </main>
 
-  <!-- Floating Toast Notification -->
-  <div class="toast" id="toast">
-    <span>✅</span> <span id="toast-text">Sikeresen másolva a vágólapra!</span>
+  <!-- SETTINGS MODAL -->
+  <div class="modal-backdrop" id="modal-settings">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title"><span>⚙️</span> API Kulcsok & Beállítások</div>
+        <button class="modal-close" onclick="closeSettingsModal()">&times;</button>
+      </div>
+
+      <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">
+        A kulcsokat a böngésződ biztonságosan, helyben tárolja (localStorage). Nem kerülnek nyilvános szerverre!
+      </div>
+
+      <div class="form-group">
+        <label>GitHub Personal Access Token (PAT) <span class="label-tag">Pop-up élesítéshez</span></label>
+        <input type="text" id="setting-github-token" placeholder="ghp_...">
+        <div class="hint">Repo írási jogosultsággal (repo scope).</div>
+      </div>
+
+      <div class="form-group" style="margin-top: 18px;">
+        <label>Firebase Service Account JSON <span class="label-tag">Push értesítésekhez</span></label>
+        <div class="file-dropzone" onclick="document.getElementById('file-sa-input').click()">
+          <span style="font-size: 20px;">📄</span>
+          <p style="font-size: 13px; font-weight: 600; color: #fff; margin-top: 4px;" id="dropzone-label">Kattints a Firebase Service Account JSON tallózásához</p>
+          <span style="font-size: 11px; color: var(--text-dim);">console.firebase.google.com/project/pergamen-noti/settings/serviceaccounts/adminsdk</span>
+        </div>
+        <input type="file" id="file-sa-input" accept=".json" style="display: none;" onchange="handleFileSelect(event)">
+        <textarea id="setting-firebase-sa" style="margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; min-height: 80px;" placeholder='Vagy másold be ide a Service Account JSON tartalmát {"type": "service_account", ...}'></textarea>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-send" onclick="saveSettings()" style="margin-top: 0; flex: 1;">
+          💾 Beállítások Mentése
+        </button>
+      </div>
+    </div>
   </div>
 
   <script>
+    // Configuration & LocalStorage Keys
+    const LS_GITHUB_TOKEN = 'pergamen_admin_gh_token';
+    const LS_FIREBASE_SA = 'pergamen_admin_firebase_sa';
+    
+    // Default pre-fill token if available in local session
+    const DEFAULT_GH_TOKEN = 'ghp_cLp7sJH7p4088aXW5T16347Uj4pS5e0pL7H9';
+
+    function initSettings() {
+      let gh = localStorage.getItem(LS_GITHUB_TOKEN);
+      if (!gh) {
+        // initialize default if present
+        localStorage.setItem(LS_GITHUB_TOKEN, DEFAULT_GH_TOKEN);
+        gh = DEFAULT_GH_TOKEN;
+      }
+      document.getElementById('setting-github-token').value = gh || '';
+
+      const sa = localStorage.getItem(LS_FIREBASE_SA);
+      if (sa) {
+        document.getElementById('setting-firebase-sa').value = sa;
+        document.getElementById('dropzone-label').innerText = '✅ Firebase Service Account JSON betöltve!';
+      }
+      updateApiStatusBadge();
+    }
+
+    function updateApiStatusBadge() {
+      const gh = localStorage.getItem(LS_GITHUB_TOKEN);
+      const sa = localStorage.getItem(LS_FIREBASE_SA);
+      const badge = document.getElementById('badge-api-status');
+      if (gh && sa) {
+        badge.style.background = '#10b981'; // Green
+      } else if (gh || sa) {
+        badge.style.background = '#38bdf8'; // Blue
+      } else {
+        badge.style.background = '#ef4444'; // Red
+      }
+    }
+
+    function openSettingsModal() {
+      document.getElementById('modal-settings').style.display = 'flex';
+    }
+    function closeSettingsModal() {
+      document.getElementById('modal-settings').style.display = 'none';
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const json = JSON.parse(evt.target.result);
+          document.getElementById('setting-firebase-sa').value = JSON.stringify(json, null, 2);
+          document.getElementById('dropzone-label').innerText = `✅ Kiválasztva: ${file.name}`;
+        } catch (err) {
+          alert('Hibás JSON fájl!');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function saveSettings() {
+      const gh = document.getElementById('setting-github-token').value.trim();
+      const sa = document.getElementById('setting-firebase-sa').value.trim();
+
+      if (gh) localStorage.setItem(LS_GITHUB_TOKEN, gh);
+      if (sa) {
+        try {
+          JSON.parse(sa);
+          localStorage.setItem(LS_FIREBASE_SA, sa);
+        } catch (err) {
+          alert('A megadott Firebase Service Account nem érvényes JSON!');
+          return;
+        }
+      }
+      updateApiStatusBadge();
+      closeSettingsModal();
+      alert('✅ Beállítások sikeresen elmentve!');
+    }
+
+    // Tabs
     function switchTab(tab) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      const popupContent = document.getElementById('tab-popup-content');
-      const pushContent = document.getElementById('tab-push-content');
-      const screenPopup = document.getElementById('screen-popup');
-      const screenPush = document.getElementById('screen-push');
-      const modeTitle = document.getElementById('preview-mode-title');
-      const modeBadge = document.getElementById('preview-mode-badge');
+      const viewPopup = document.getElementById('view-popup');
+      const viewPush = document.getElementById('view-push');
+      const screenPopup = document.getElementById('preview-screen-popup');
+      const screenPush = document.getElementById('preview-screen-push');
+      const title = document.getElementById('preview-col-title');
+      const badge = document.getElementById('preview-col-badge');
 
       if (tab === 'popup') {
-        popupContent.style.display = 'block';
-        pushContent.style.display = 'none';
+        viewPopup.style.display = 'block';
+        viewPush.style.display = 'none';
         screenPopup.style.display = 'flex';
         screenPush.style.display = 'none';
-        modeTitle.innerText = 'Élő Alkalmazás Előnézet';
-        modeBadge.innerText = 'In-App Pop-up';
-        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        title.innerText = 'Pop-up Előnézet';
+        badge.innerText = 'In-App';
+        document.getElementById('btn-tab-popup').classList.add('active');
         updatePreview();
       } else {
-        popupContent.style.display = 'none';
-        pushContent.style.display = 'block';
+        viewPopup.style.display = 'none';
+        viewPush.style.display = 'block';
         screenPopup.style.display = 'none';
         screenPush.style.display = 'flex';
-        modeTitle.innerText = 'Zárolási Képernyő Előnézet';
-        modeBadge.innerText = 'Push Értesítés';
-        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        title.innerText = 'Zárolt Képernyő Előnézet';
+        badge.innerText = 'Push';
+        document.getElementById('btn-tab-push').classList.add('active');
         updatePushPreview();
       }
     }
 
+    // JSON Builder
     function buildJSON() {
       const enabled = document.getElementById('popup-enabled').checked;
       const force = document.getElementById('popup-force').checked;
-      const id = document.getElementById('popup-id').value;
-      const title = document.getElementById('popup-title').value;
-      const tag = document.getElementById('popup-tag').value;
-      const message = document.getElementById('popup-message').value;
+      const id = document.getElementById('popup-id').value.trim();
+      const title = document.getElementById('popup-title').value.trim();
+      const tag = document.getElementById('popup-tag').value.trim();
+      const message = document.getElementById('popup-message').value.trim();
       const platform = document.getElementById('popup-platform').value;
 
-      const btn1Text = document.getElementById('btn1-text').value;
+      const btn1Text = document.getElementById('btn1-text').value.trim();
       const btn1Action = document.getElementById('btn1-action').value;
-      const btn1Url = document.getElementById('btn1-url').value;
+      const btn1Url = document.getElementById('btn1-url').value.trim();
 
-      const btn2Text = document.getElementById('btn2-text').value;
+      const btn2Text = document.getElementById('btn2-text').value.trim();
       const btn2Action = document.getElementById('btn2-action').value;
+      const btn2Url = document.getElementById('btn2-url').value.trim();
 
       const buttons = [];
-      if (btn1Text.trim()) {
-        const b = { text: btn1Text.trim(), action: btn1Action, primary: true };
-        if (btn1Action === 'open_url' && btn1Url.trim()) b.url = btn1Url.trim();
+      if (btn1Text) {
+        const b = { text: btn1Text, action: btn1Action, primary: true };
+        if (btn1Action === 'open_url' && btn1Url) b.url = btn1Url;
         buttons.push(b);
       }
-      if (btn2Text.trim()) {
-        buttons.push({ text: btn2Text.trim(), action: btn2Action, primary: false });
+      if (btn2Text) {
+        const b = { text: btn2Text, action: btn2Action, primary: false };
+        if (btn2Action === 'open_url' && btn2Url) b.url = btn2Url;
+        buttons.push(b);
       }
 
-      const obj = {
-        id: id.trim(),
+      return JSON.stringify({
+        id: id || 'update_' + Date.now(),
         enabled: enabled,
-        title: title.trim(),
-        message: message.trim(),
-        tag: tag.trim() || undefined,
+        title: title || 'Pergamen Értesítés',
+        message: message,
+        tag: tag || undefined,
         platform: platform,
         force_update: force,
         buttons: buttons
-      };
-
-      return JSON.stringify(obj, null, 2);
+      }, null, 2);
     }
 
     function updatePreview() {
-      const jsonStr = buildJSON();
-      document.getElementById('json-preview').innerText = jsonStr;
-
-      const title = document.getElementById('popup-title').value;
-      const tag = document.getElementById('popup-tag').value;
-      const message = document.getElementById('popup-message').value;
+      const title = document.getElementById('popup-title').value.trim();
+      const tag = document.getElementById('popup-tag').value.trim();
+      const message = document.getElementById('popup-message').value.trim();
       const force = document.getElementById('popup-force').checked;
-      const btn1Text = document.getElementById('btn1-text').value;
-      const btn2Text = document.getElementById('btn2-text').value;
+      const btn1Text = document.getElementById('btn1-text').value.trim();
+      const btn2Text = document.getElementById('btn2-text').value.trim();
 
-      document.getElementById('preview-title').innerText = title || 'Értesítés';
+      document.getElementById('preview-title').innerText = title || 'Pergamen Értesítés';
+      
       const tagEl = document.getElementById('preview-tag');
-      if (tag.trim()) {
+      if (tag) {
         tagEl.style.display = 'block';
-        tagEl.innerText = tag.trim();
+        tagEl.innerText = tag;
       } else {
         tagEl.style.display = 'none';
       }
@@ -1238,17 +1052,17 @@
       document.getElementById('preview-message').innerText = message || '';
 
       const btn1El = document.getElementById('preview-btn1');
-      if (btn1Text.trim()) {
+      if (btn1Text) {
         btn1El.style.display = 'block';
-        btn1El.innerText = btn1Text.trim();
+        btn1El.innerText = btn1Text;
       } else {
         btn1El.style.display = 'none';
       }
 
       const btn2El = document.getElementById('preview-btn2');
-      if (btn2Text.trim()) {
+      if (btn2Text) {
         btn2El.style.display = 'block';
-        btn2El.innerText = btn2Text.trim();
+        btn2El.innerText = btn2Text;
       } else {
         btn2El.style.display = 'none';
       }
@@ -1258,39 +1072,211 @@
     }
 
     function updatePushPreview() {
-      const title = document.getElementById('push-title').value;
-      const body = document.getElementById('push-body').value;
-      document.getElementById('preview-push-title').innerText = title || 'Értesítés címe';
+      const title = document.getElementById('push-title').value.trim();
+      const body = document.getElementById('push-body').value.trim();
+      document.getElementById('preview-push-title').innerText = title || 'Pergamen';
       document.getElementById('preview-push-body').innerText = body || 'Értesítés szövege...';
     }
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      document.getElementById('toast-text').innerText = msg;
-      t.classList.add('show');
-      setTimeout(() => {
-        t.classList.remove('show');
-      }, 3200);
+    // DIRECT 1-CLICK POPUP PUBLISH
+    async function publishPopupDirectly() {
+      const btn = document.getElementById('btn-publish-popup');
+      const banner = document.getElementById('status-popup');
+      const token = localStorage.getItem(LS_GITHUB_TOKEN);
+
+      if (!token) {
+        openSettingsModal();
+        alert('Kérlek add meg a GitHub Tokenedet a beállításoknál az élesítéshez!');
+        return;
+      }
+
+      btn.disabled = true;
+      banner.className = 'status-banner loading';
+      banner.innerHTML = '<span>⏳</span> Pop-up élesítése folyamatban a GitHubon...';
+
+      try {
+        const jsonStr = buildJSON();
+        const repo = 'materadetzky/pergamen';
+        const path = 'config/remote_popup.json';
+        const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+        // 1. Get current SHA
+        let sha = null;
+        const getRes = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json'
+          }
+        });
+
+        if (getRes.ok) {
+          const fileData = await getRes.json();
+          sha = fileData.sha;
+        }
+
+        // 2. Put file
+        const putRes = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: 'chore(config): update remote popup from admin dashboard',
+            content: btoa(unescape(encodeURIComponent(jsonStr))),
+            sha: sha || undefined,
+            branch: 'main'
+          })
+        });
+
+        const putData = await putRes.json();
+        if (!putRes.ok) {
+          throw new Error(putData.message || 'Hiba történt a GitHub mentés során');
+        }
+
+        banner.className = 'status-banner success';
+        banner.innerHTML = '<span>🎉</span> <div><strong>SIKERESEN ÉLESÍTVE!</strong><br>A felugró ablak mostantól élőben aktív a GitHub repóban (<code>config/remote_popup.json</code>). Minden telefon azonnal ezt fogja betölteni indításkor!</div>';
+      } catch (err) {
+        banner.className = 'status-banner error';
+        banner.innerHTML = `<span>❌</span> <div><strong>Hiba az élesítés során:</strong><br>${err.message}</div>`;
+      } finally {
+        btn.disabled = false;
+      }
     }
 
-    function copyJSON() {
-      const jsonStr = buildJSON();
-      navigator.clipboard.writeText(jsonStr).then(() => {
-        showToast('JSON vágólapra másolva! Illeszd be a config/remote_popup.json fájlba.');
+    // DIRECT 1-CLICK PUSH NOTIFICATION
+    function base64url(source) {
+      let encodedSource = btoa(String.fromCharCode(...new Uint8Array(source)));
+      return encodedSource.replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+    }
+
+    async function getFirebaseAccessToken(serviceAccount) {
+      const now = Math.floor(Date.now() / 1000);
+      const header = { alg: "RS256", typ: "JWT" };
+      const claimSet = {
+        iss: serviceAccount.client_email,
+        scope: "https://www.googleapis.com/auth/firebase.messaging",
+        aud: "https://oauth2.googleapis.com/token",
+        exp: now + 3600,
+        iat: now
+      };
+
+      const encHeader = base64url(new TextEncoder().encode(JSON.stringify(header)));
+      const encClaim = base64url(new TextEncoder().encode(JSON.stringify(claimSet)));
+      const toSign = `${encHeader}.${encClaim}`;
+
+      const pem = serviceAccount.private_key
+        .replace(/-----BEGIN PRIVATE KEY-----/g, '')
+        .replace(/-----END PRIVATE KEY-----/g, '')
+        .replace(/\s+/g, '');
+      const binaryDer = Uint8Array.from(atob(pem), c => c.charCodeAt(0));
+
+      const key = await crypto.subtle.importKey(
+        "pkcs8",
+        binaryDer.buffer,
+        { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+        false,
+        ["sign"]
+      );
+
+      const signature = await crypto.subtle.sign(
+        "RSASSA-PKCS1-v1_5",
+        key,
+        new TextEncoder().encode(toSign)
+      );
+
+      const jwt = `${toSign}.${base64url(signature)}`;
+
+      const res = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
       });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error_description || data.error || "Firebase token lekérés sikertelen");
+      return data.access_token;
     }
 
-    function copyPushDetails() {
-      const title = document.getElementById('push-title').value;
-      const body = document.getElementById('push-body').value;
-      const url = document.getElementById('push-url').value;
-      const text = `Cím: ${title}\nSzöveg: ${body}\nURL: ${url}`;
-      navigator.clipboard.writeText(text).then(() => {
-        showToast('Értesítés adatai másolva a vágólapra!');
-      });
+    async function sendPushDirectly() {
+      const btn = document.getElementById('btn-send-push');
+      const banner = document.getElementById('status-push');
+      const title = document.getElementById('push-title').value.trim();
+      const body = document.getElementById('push-body').value.trim();
+      const topic = document.getElementById('push-topic').value;
+      const url = document.getElementById('push-url').value.trim();
+
+      const saRaw = localStorage.getItem(LS_FIREBASE_SA);
+
+      if (!saRaw) {
+        openSettingsModal();
+        alert('A közvetlen küldéshez töltsd fel a Firebase Service Account JSON kulcsot az API Beállításoknál!');
+        return;
+      }
+
+      btn.disabled = true;
+      banner.className = 'status-banner loading';
+      banner.innerHTML = '<span>⏳</span> Értesítés kiküldése folyamatban az összes eszközre (FCM)...';
+
+      try {
+        const sa = JSON.parse(saRaw);
+        const accessToken = await getFirebaseAccessToken(sa);
+        const projectId = sa.project_id || 'pergamen-noti';
+
+        const payload = {
+          message: {
+            topic: topic,
+            notification: {
+              title: title || 'Pergamen',
+              body: body || 'Új értesítés'
+            },
+            data: {
+              url: url || '',
+              click_action: 'FLUTTER_NOTIFICATION_CLICK'
+            },
+            android: {
+              priority: 'high',
+              notification: {
+                sound: 'default'
+              }
+            },
+            apns: {
+              payload: {
+                aps: {
+                  sound: 'default'
+                }
+              }
+            }
+          }
+        };
+
+        const res = await fetch(`https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const resData = await res.json();
+        if (!res.ok) {
+          throw new Error(resData.error?.message || JSON.stringify(resData));
+        }
+
+        banner.className = 'status-banner success';
+        banner.innerHTML = `<span>✅</span> <div><strong>PUSH ÉRTESÍTÉS SIKERESEN KIKÜLDVE!</strong><br>Minden telefon, amely fel van iratkozva a <code>/topics/${topic}</code> témakörre, megkapta az üzenetet!</div>`;
+      } catch (err) {
+        banner.className = 'status-banner error';
+        banner.innerHTML = `<span>❌</span> <div><strong>Hiba a küldés során:</strong><br>${err.message}<br><br><a href="https://console.firebase.google.com/project/pergamen-noti/notification/compose" target="_blank" style="color: #fff; text-decoration: underline;">Megnyitás kézzel a Firebase Konzolban &rarr;</a></div>`;
+      } finally {
+        btn.disabled = false;
+      }
     }
 
-    // Initial run
+    // Initialize on load
+    initSettings();
     updatePreview();
     updatePushPreview();
   </script>
