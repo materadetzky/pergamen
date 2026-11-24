@@ -1111,7 +1111,7 @@ class SettingsScreenState extends State<SettingsScreen>
                                   borderRadius: BorderRadius.circular(24.0),
                                 ),
                                 child: Text(
-                                  "Pergamen v1.2.18",
+                                  "Pergamen v1.2.19",
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodySmall!

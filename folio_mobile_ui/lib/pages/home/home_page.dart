@@ -196,32 +196,49 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         animation: _liveCardAnimation,
                         builder: (context, child) {
                           final colorScheme = Theme.of(context).colorScheme;
-                          final Color greetingColor =
-                              Theme.of(context).textTheme.bodyMedium?.color ??
-                                  colorScheme.onSurface;
-                          final Color dateColor = AppColors.of(context)
-                              .text
-                              .withValues(alpha: 0.55);
+                          final isDark =
+                              Theme.of(context).brightness == Brightness.dark;
+                          final Color greetingColor = colorScheme.onSurface;
+                          final String activeFont =
+                              settings.fontFamily.isNotEmpty
+                                  ? settings.fontFamily
+                                  : 'Figtree';
+
+                          TextStyle expressiveStyle(TextStyle base) {
+                            try {
+                              return GoogleFonts.getFont(activeFont,
+                                  textStyle: base);
+                            } catch (_) {
+                              return base;
+                            }
+                          }
 
                           final paddingTop =
                               MediaQuery.of(context).padding.top;
                           final double cardContentHeight =
                               _liveCard.currentState == LiveCardState.morning
-                                  ? 282.0
+                                  ? 304.0
                                   : (_liveCard.currentState ==
                                           LiveCardState.duringLesson
                                       ? (_liveCard.currentLesson?.description
                                                   .isNotEmpty ==
                                               true
-                                          ? 312.0
-                                          : 288.0)
+                                          ? 334.0
+                                          : 310.0)
                                       : (_liveCard.currentState ==
                                               LiveCardState.duringBreak
-                                          ? 288.0
+                                          ? 310.0
                                           : (_liveCard.currentState ==
                                                   LiveCardState.summary
-                                              ? 280.0
-                                              : 198.0)));
+                                              ? 302.0
+                                              : 220.0)));
+
+                          final String localeCode =
+                              I18n.of(context).locale.languageCode;
+                          final String formattedDate =
+                              DateFormat('EEEE, MMM d.', localeCode)
+                                  .format(DateTime.now())
+                                  .capital();
 
                           return SliverAppBar(
                             automaticallyImplyLeading: false,
@@ -232,52 +249,72 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             shape: const RoundedRectangleBorder(),
                             centerTitle: false,
                             titleSpacing: 0.0,
-                            toolbarHeight: 64.0,
-                            // Welcome text
+                            toolbarHeight: 74.0,
+                            // Material 3 Expressive Greeting & Date Pill
                             title: Padding(
-                              padding: const EdgeInsets.only(left: 24.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    greeting,
-                                    overflow: TextOverflow.fade,
-                                    textAlign: TextAlign.start,
-                                    style:
-                                        Provider.of<SettingsProvider>(context)
-                                                        .fontFamily !=
-                                                    '' &&
-                                                Provider.of<SettingsProvider>(
-                                                        context)
-                                                    .titleOnlyFont
-                                            ? GoogleFonts.getFont(
-                                                Provider.of<SettingsProvider>(
-                                                        context)
-                                                    .fontFamily,
-                                                textStyle: TextStyle(
-                                                  fontWeight: FontWeight.w800,
-                                                  fontSize: 30.0,
-                                                  color: greetingColor,
-                                                ),
-                                              )
-                                            : TextStyle(
-                                                fontWeight: FontWeight.w800,
-                                                fontSize: 30.0,
-                                                color: greetingColor,
-                                              ),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      greeting,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.start,
+                                      style: expressiveStyle(
+                                        TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 28.0,
+                                          letterSpacing: -0.6,
+                                          height: 1.15,
+                                          color: greetingColor,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  const SizedBox(height: 2.0),
-                                  Text(
-                                    DateFormat('EEEE, MMM d',
-                                            I18n.locale.countryCode)
-                                        .format(DateTime.now())
-                                        .capital(),
-                                    textAlign: TextAlign.start,
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.w500,
-                                      color: dateColor,
+                                  const SizedBox(height: 6.0),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 11.0, vertical: 4.5),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.secondaryContainer
+                                          .withValues(
+                                              alpha: isDark ? 0.55 : 0.75),
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      border: Border.all(
+                                        color: colorScheme.outlineVariant
+                                            .withValues(alpha: 0.25),
+                                        width: 0.8,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.calendar_today_rounded,
+                                          size: 13.0,
+                                          color: colorScheme.primary,
+                                        ),
+                                        const SizedBox(width: 6.0),
+                                        Text(
+                                          formattedDate,
+                                          textAlign: TextAlign.start,
+                                          style: expressiveStyle(
+                                            TextStyle(
+                                              fontSize: 12.5,
+                                              fontWeight: FontWeight.w700,
+                                              letterSpacing: 0.15,
+                                              height: 1.1,
+                                              color: colorScheme
+                                                  .onSecondaryContainer,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -291,13 +328,14 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             flexibleSpace: FlexibleSpaceBar(
                               collapseMode: CollapseMode.parallax,
                               background: Container(
-                                color: Theme.of(context).scaffoldBackgroundColor,
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
                                 child: Padding(
                                   padding: EdgeInsets.only(
-                                    left: 24.0,
-                                    right: 24.0,
-                                    top: paddingTop + 72.0,
-                                    bottom: 64.0,
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: paddingTop + 82.0,
+                                    bottom: 76.0,
                                   ),
                                   child: Transform.scale(
                                     scale: _liveCardAnimation.value,
@@ -511,7 +549,7 @@ class _HomeCategoryBar extends StatelessWidget implements PreferredSizeWidget {
   final void Function(int) onTap;
 
   @override
-  Size get preferredSize => const Size.fromHeight(56.0);
+  Size get preferredSize => const Size.fromHeight(68.0);
 
   static const _icons = <IconData>[
     Icons.apps_rounded,
@@ -531,63 +569,120 @@ class _HomeCategoryBar extends StatelessWidget implements PreferredSizeWidget {
       'Absences'.i18n,
     ];
 
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    final String activeFont =
+        settings.fontFamily.isNotEmpty ? settings.fontFamily : 'Figtree';
+
+    TextStyle expressiveStyle(TextStyle base) {
+      try {
+        return GoogleFonts.getFont(activeFont, textStyle: base);
+      } catch (_) {
+        return base;
+      }
+    }
+
     return AnimatedBuilder(
       animation: tabController,
       builder: (context, _) {
         final selected = tabController.index;
-        final secondary = Theme.of(context).colorScheme.secondaryContainer;
-        final onSecondary =
-            Theme.of(context).colorScheme.onSecondaryContainer;
-        final unselectedColor =
-            AppColors.of(context).text.withValues(alpha: 0.5);
+        final colorScheme = Theme.of(context).colorScheme;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+
+        final Color trackBg = Color.alphaBlend(
+          colorScheme.primary.withValues(alpha: isDark ? 0.06 : 0.04),
+          colorScheme.surfaceContainerHigh,
+        );
 
         return Container(
           color: Theme.of(context).scaffoldBackgroundColor,
           height: preferredSize.height,
-          padding:
-              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-          child: Row(
-            children: List.generate(5, (i) {
-              final isSelected = i == selected;
-              return Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => onTap(i),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                    margin: const EdgeInsets.symmetric(horizontal: 2.0),
-                    decoration: BoxDecoration(
-                      color: isSelected ? secondary : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          _icons[i],
-                          size: 20.0,
-                          color: isSelected ? onSecondary : unselectedColor,
-                        ),
-                        const SizedBox(height: 2.0),
-                        Text(
-                          labels[i],
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: isSelected
-                                ? FontWeight.w600
-                                : FontWeight.w400,
-                            color:
-                                isSelected ? onSecondary : unselectedColor,
+          padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 8.0),
+          child: Container(
+            padding: const EdgeInsets.all(4.0),
+            decoration: BoxDecoration(
+              color: trackBg,
+              borderRadius: BorderRadius.circular(26.0),
+              border: Border.all(
+                color: colorScheme.outlineVariant
+                    .withValues(alpha: isDark ? 0.18 : 0.32),
+                width: 1.0,
+              ),
+            ),
+            child: Row(
+              children: List.generate(5, (i) {
+                final isSelected = i == selected;
+                return Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => onTap(i),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 240),
+                      curve: Curves.easeOutCubic,
+                      margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4.0, vertical: 4.0),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? colorScheme.secondaryContainer
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(22.0),
+                        border: isSelected
+                            ? Border.all(
+                                color: colorScheme.secondary
+                                    .withValues(alpha: 0.30),
+                                width: 1.0,
+                              )
+                            : null,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedScale(
+                            scale: isSelected ? 1.08 : 1.0,
+                            duration: const Duration(milliseconds: 220),
+                            curve: Curves.easeOutBack,
+                            child: Icon(
+                              _icons[i],
+                              size: 19.5,
+                              color: isSelected
+                                  ? colorScheme.onSecondaryContainer
+                                  : colorScheme.onSurfaceVariant
+                                      .withValues(alpha: 0.85),
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 2.5),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 2.0),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                labels[i],
+                                maxLines: 1,
+                                style: expressiveStyle(
+                                  TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w800
+                                        : FontWeight.w600,
+                                    letterSpacing: -0.15,
+                                    height: 1.1,
+                                    color: isSelected
+                                        ? colorScheme.onSecondaryContainer
+                                        : colorScheme.onSurfaceVariant
+                                            .withValues(alpha: 0.85),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            }),
+                );
+              }),
+            ),
           ),
         );
       },
