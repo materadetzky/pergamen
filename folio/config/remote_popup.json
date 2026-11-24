@@ -1,9 +1,9 @@
 {
-  "id": "update_v1_2_19",
+  "id": "update_v1_2_20",
   "enabled": true,
   "title": "🎉 Új Pergamen verzió elérhető!",
-  "message": "Megjelent a Pergamen v1.2.19!\n\n• Megújult Kezdőlap (Home) felső köszöntő, dátum kapszula és kategória-választó gombok (Összes, Jegyek, stb.)\n• Vadonatúj Material 3 Expressive Beállítások menü és Navigációs sáv\n• Hibajavítások és teljesítményoptimalizálás",
-  "tag": "v1.2.19",
+  "message": "Megjelent a Pergamen v1.2.20!\n\n• Letisztult, egyszerűsített Material You dizájn a Kezdőlapon, a Beállításokban és a Navigációs sávon\n• Tisztább tipográfia és átláthatóbb kártyák felesleges keretek nélkül\n• Hibajavítások és teljesítményoptimalizálás",
+  "tag": "v1.2.20",
   "platform": "all",
   "force_update": false,
   "buttons": [

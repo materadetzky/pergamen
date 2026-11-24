@@ -33,14 +33,7 @@ class _LiveCardWidgetState extends State<LiveCardWidget> {
           clipBehavior: Clip.hardEdge,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(28.0),
-            border: Border.all(
-              color: Theme.of(context)
-                  .colorScheme
-                  .outlineVariant
-                  .withValues(alpha: 0.18),
-              width: 1.0,
-            ),
+            borderRadius: BorderRadius.circular(24.0),
           ),
           child: widget.child,
         ),

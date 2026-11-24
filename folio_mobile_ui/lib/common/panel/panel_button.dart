@@ -37,7 +37,7 @@ class PanelButton extends StatelessWidget {
       onLongPress: longPressInstead ? onPressed : onLongPress,
       padding: padding,
       shape: RoundedRectangleBorder(
-          borderRadius: borderRadius ?? BorderRadius.circular(24.0)),
+          borderRadius: borderRadius ?? BorderRadius.circular(16.0)),
       fillColor: background
           ? Colors.white.withValues(
               alpha:
@@ -45,20 +45,11 @@ class PanelButton extends StatelessWidget {
           : null,
       child: ListTile(
         leading: leading != null
-            ? Container(
-                width: 40.0,
-                height: 40.0,
-                decoration: BoxDecoration(
-                  color: colorScheme.secondaryContainer.withValues(alpha: 0.65),
-                  borderRadius: BorderRadius.circular(14.0),
-                ),
-                alignment: Alignment.center,
-                child: Theme(
-                  data: Theme.of(context).copyWith(
-                      iconTheme: IconThemeData(
-                          color: colorScheme.onSecondaryContainer, size: 20.0)),
-                  child: leading!,
-                ),
+            ? Theme(
+                data: Theme.of(context).copyWith(
+                    iconTheme: IconThemeData(
+                        color: colorScheme.primary, size: 22.0)),
+                child: leading!,
               )
             : null,
         trailing: trailingDivider
@@ -68,9 +59,9 @@ class PanelButton extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.only(right: 8.0),
                     width: 1.5,
-                    height: 28.0,
+                    height: 24.0,
                     decoration: BoxDecoration(
-                      color: AppColors.of(context).text.withValues(alpha: .15),
+                      color: AppColors.of(context).text.withValues(alpha: .12),
                       borderRadius: BorderRadius.circular(45.0),
                     ),
                   ),
@@ -86,7 +77,7 @@ class PanelButton extends StatelessWidget {
                     .copyWith(fontWeight: FontWeight.w600, fontSize: 15.5),
                 child: title!)
             : null,
-        contentPadding: const EdgeInsets.symmetric(vertical: 2.0),
+        contentPadding: EdgeInsets.zero,
         visualDensity: VisualDensity.compact,
       ),
     );

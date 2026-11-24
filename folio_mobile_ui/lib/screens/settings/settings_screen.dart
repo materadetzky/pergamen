@@ -491,50 +491,17 @@ class SettingsScreenState extends State<SettingsScreen>
   }
 
   Widget _buildSectionHeader(String catKey, String label) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final IconData catIcon = switch (catKey) {
-      'general' => Icons.tune_rounded,
-      'appearance' => Icons.palette_rounded,
-      'grades' => Icons.insights_rounded,
-      'notifications' => Icons.notifications_active_rounded,
-      'other' => Icons.widgets_rounded,
-      'about' => Icons.info_rounded,
-      _ => Icons.circle_rounded,
-    };
-
     return Padding(
       key: _sectionKeys[catKey],
-      padding: const EdgeInsets.only(top: 12.0, bottom: 10.0, left: 24.0, right: 24.0),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-            decoration: BoxDecoration(
-              color: colorScheme.primaryContainer.withValues(alpha: 0.85),
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  catIcon,
-                  size: 15.0,
-                  color: colorScheme.onPrimaryContainer,
-                ),
-                const SizedBox(width: 6.0),
-                Text(
-                  label.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.9,
-                    color: colorScheme.onPrimaryContainer,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.only(top: 14.0, bottom: 8.0, left: 28.0),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 13.5,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
     );
   }
@@ -635,25 +602,14 @@ class SettingsScreenState extends State<SettingsScreen>
   }) {
     final colorScheme = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(14.0, 12.0, 12.0, 6.0),
+      padding: const EdgeInsets.fromLTRB(14.0, 12.0, 12.0, 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(children: [
-            Container(
-              width: 40.0,
-              height: 40.0,
-              decoration: BoxDecoration(
-                color: colorScheme.secondaryContainer.withValues(alpha: 0.65),
-                borderRadius: BorderRadius.circular(14.0),
-              ),
-              alignment: Alignment.center,
-              child: Icon(icon,
-                  size: 20.0,
-                  color: colorScheme.onSecondaryContainer),
-            ),
-            const SizedBox(width: 16.0),
+            Icon(icon, size: 22.0, color: colorScheme.primary),
+            const SizedBox(width: 14.0),
             Expanded(
               child: Text(
                 label,
@@ -665,32 +621,22 @@ class SettingsScreenState extends State<SettingsScreen>
               ),
             ),
             const SizedBox(width: 8.0),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
-              decoration: BoxDecoration(
-                color: colorScheme.secondaryContainer,
-                borderRadius: BorderRadius.circular(14.0),
-              ),
-              child: Text(
-                valueText,
-                style: TextStyle(
-                  fontSize: 13.0,
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSecondaryContainer,
-                ),
+            Text(
+              valueText,
+              style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.w700,
+                color: colorScheme.primary,
               ),
             ),
           ]),
-          const SizedBox(height: 4.0),
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
-              trackHeight: 8.0,
-              activeTrackColor: colorScheme.secondary,
+              trackHeight: 5.0,
+              activeTrackColor: colorScheme.primary,
               inactiveTrackColor: colorScheme.secondaryContainer,
-              thumbColor: colorScheme.secondary,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10.0),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 18.0),
+              thumbColor: colorScheme.primary,
+              overlayShape: const RoundSliderOverlayShape(overlayRadius: 14.0),
             ),
             child: Slider(
               value: value,
@@ -780,12 +726,12 @@ class SettingsScreenState extends State<SettingsScreen>
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── Header (Material 3 Expressive) ───────────────────────────
+          // ── Header (Clean Material You) ───────────────────────────
           Container(
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primaryContainer,
               borderRadius:
-                  const BorderRadius.vertical(bottom: Radius.circular(36.0)),
+                  const BorderRadius.vertical(bottom: Radius.circular(28.0)),
             ),
             child: SafeArea(
               bottom: false,
@@ -800,15 +746,15 @@ class SettingsScreenState extends State<SettingsScreen>
                         GestureDetector(
                           onTap: () => Navigator.of(context).maybePop(),
                           child: Container(
-                            width: 44.0,
-                            height: 44.0,
+                            width: 40.0,
+                            height: 40.0,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: Theme.of(context)
                                   .colorScheme
                                   .onPrimaryContainer
-                                  .withValues(alpha: 0.14),
-                              borderRadius: BorderRadius.circular(16.0),
+                                  .withValues(alpha: 0.12),
+                              shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Icons.arrow_back_ios_new_rounded,
@@ -819,7 +765,7 @@ class SettingsScreenState extends State<SettingsScreen>
                             ),
                           ),
                         ),
-                        const SizedBox(width: 14.0),
+                        const SizedBox(width: 12.0),
                         Expanded(
                           child: Text(
                             "settings".i18n,
@@ -827,9 +773,9 @@ class SettingsScreenState extends State<SettingsScreen>
                               color: Theme.of(context)
                                   .colorScheme
                                   .onPrimaryContainer,
-                              fontSize: 30.0,
+                              fontSize: 28.0,
                               fontWeight: FontWeight.w800,
-                              letterSpacing: -0.5,
+                              letterSpacing: -0.4,
                             ),
                           ),
                         ),
@@ -840,19 +786,19 @@ class SettingsScreenState extends State<SettingsScreen>
                               setState(() => _searchQuery = '');
                             },
                             child: Container(
-                              width: 44.0,
-                              height: 44.0,
+                              width: 40.0,
+                              height: 40.0,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onPrimaryContainer
-                                    .withValues(alpha: 0.14),
-                                borderRadius: BorderRadius.circular(16.0),
+                                    .withValues(alpha: 0.12),
+                                shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.close_rounded,
-                                size: 20.0,
+                                size: 18.0,
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onPrimaryContainer,
@@ -863,14 +809,14 @@ class SettingsScreenState extends State<SettingsScreen>
                     ),
                   ),
 
-                  // Search bar (Expressive Pill)
+                  // Search bar (Simple Material You Pill)
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(18.0, 14.0, 18.0, 10.0),
+                    padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
                     child: TextField(
                       controller: _searchController,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                       ),
                       decoration: InputDecoration(
                         hintText: "search".i18n,
@@ -878,54 +824,41 @@ class SettingsScreenState extends State<SettingsScreen>
                           color: Theme.of(context)
                               .colorScheme
                               .onPrimaryContainer
+                              .withValues(alpha: 0.5),
+                          fontWeight: FontWeight.w400,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search_rounded,
+                          size: 20.0,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimaryContainer
                               .withValues(alpha: 0.55),
-                          fontWeight: FontWeight.w500,
-                        ),
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.only(left: 16.0, right: 10.0),
-                          child: Icon(
-                            Icons.search_rounded,
-                            size: 22.0,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer
-                                .withValues(alpha: 0.65),
-                          ),
-                        ),
-                        prefixIconConstraints: const BoxConstraints(
-                          minWidth: 48.0,
-                          minHeight: 48.0,
                         ),
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 14.0),
+                            horizontal: 18.0, vertical: 12.0),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(28.0),
+                          borderRadius: BorderRadius.circular(24.0),
                           borderSide: BorderSide.none,
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(28.0),
+                          borderRadius: BorderRadius.circular(24.0),
                           borderSide: BorderSide.none,
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(28.0),
-                          borderSide: BorderSide(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer
-                                .withValues(alpha: 0.35),
-                            width: 1.5,
-                          ),
+                          borderRadius: BorderRadius.circular(24.0),
+                          borderSide: BorderSide.none,
                         ),
                         filled: true,
                         fillColor: Theme.of(context)
                             .colorScheme
                             .onPrimaryContainer
-                            .withValues(alpha: 0.12),
+                            .withValues(alpha: 0.10),
                       ),
                     ),
                   ),
 
-                  // ── Category chips (Material 3 Expressive Pills) ──
+                  // ── Category chips (Clean Material You) ──
                   if (!isSearching)
                     ValueListenableBuilder<String?>(
                       valueListenable: _activeNavCategoryNotifier,
@@ -934,7 +867,7 @@ class SettingsScreenState extends State<SettingsScreen>
                         scrollDirection: Axis.horizontal,
                         controller: _chipScrollController,
                         padding:
-                            const EdgeInsets.fromLTRB(18.0, 4.0, 18.0, 16.0),
+                            const EdgeInsets.fromLTRB(14.0, 4.0, 14.0, 14.0),
                         child: Row(
                           children: navCategories.map((c) {
                             final catKey = c['key'] as String;
@@ -942,51 +875,44 @@ class SettingsScreenState extends State<SettingsScreen>
                             final colorScheme = Theme.of(context).colorScheme;
                             return Padding(
                               key: _chipKeys[catKey],
-                              padding: const EdgeInsets.only(right: 8.0),
+                              padding: const EdgeInsets.only(right: 4.0),
                               child: GestureDetector(
                                 onTap: () => _scrollToSection(catKey),
                                 child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 240),
+                                  duration: const Duration(milliseconds: 200),
                                   curve: Curves.easeOutCubic,
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 10.0),
+                                      horizontal: 14.0, vertical: 8.0),
                                   decoration: BoxDecoration(
                                     color: isActive
-                                        ? colorScheme.secondaryContainer
-                                        : colorScheme.onPrimaryContainer
-                                            .withValues(alpha: 0.08),
-                                    borderRadius: BorderRadius.circular(24.0),
-                                    border: Border.all(
-                                      color: isActive
-                                          ? colorScheme.secondary
-                                              .withValues(alpha: 0.35)
-                                          : Colors.transparent,
-                                      width: 1.0,
-                                    ),
+                                        ? colorScheme.secondary
+                                            .withValues(alpha: 0.16)
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Icon(
                                         c['icon'] as IconData,
-                                        size: 16.0,
+                                        size: 15.5,
                                         color: isActive
-                                            ? colorScheme.onSecondaryContainer
+                                            ? colorScheme.secondary
                                             : colorScheme.onPrimaryContainer
-                                                .withValues(alpha: 0.75),
+                                                .withValues(alpha: 0.65),
                                       ),
-                                      const SizedBox(width: 7.0),
+                                      const SizedBox(width: 6.0),
                                       Text(
                                         c['label'] as String,
                                         style: TextStyle(
                                           fontSize: 13.5,
                                           fontWeight: isActive
                                               ? FontWeight.w700
-                                              : FontWeight.w600,
+                                              : FontWeight.w500,
                                           color: isActive
-                                              ? colorScheme.onSecondaryContainer
+                                              ? colorScheme.secondary
                                               : colorScheme.onPrimaryContainer
-                                                  .withValues(alpha: 0.75),
+                                                  .withValues(alpha: 0.65),
                                         ),
                                       ),
                                     ],
@@ -1111,7 +1037,7 @@ class SettingsScreenState extends State<SettingsScreen>
                                   borderRadius: BorderRadius.circular(24.0),
                                 ),
                                 child: Text(
-                                  "Pergamen v1.2.19",
+                                  "Pergamen v1.2.20",
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodySmall!
@@ -1589,45 +1515,33 @@ class SettingsScreenState extends State<SettingsScreen>
                             color: AppColors.of(context)
                                 .text
                                 .withValues(alpha: .95))),
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.55),
-                        borderRadius: BorderRadius.circular(14.0),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: settings.androidLiveNotificationType,
-                          isDense: true,
-                          borderRadius: BorderRadius.circular(18.0),
-                          dropdownColor: Theme.of(context).colorScheme.surface,
-                          icon: Icon(
-                            Icons.expand_more_rounded,
-                            size: 18.0,
-                            color: Theme.of(context).colorScheme.onSecondaryContainer,
-                          ),
-                          style: TextStyle(
-                            fontSize: 13.5,
-                            fontWeight: FontWeight.w700,
-                            color: Theme.of(context).colorScheme.onSecondaryContainer,
-                          ),
-                          items: [
-                            DropdownMenuItem(
-                              value: 'native',
-                              child: Text('native_android'.i18n),
-                            ),
-                            const DropdownMenuItem(
-                              value: 'hyper_os',
-                              child: Text('HyperOS'),
-                            ),
-                          ],
-                          onChanged: (v) {
-                            if (v == null) return;
-                            _haptic();
-                            settings.update(androidLiveNotificationType: v);
-                            setState(() {});
-                          },
+                    trailing: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: settings.androidLiveNotificationType,
+                        isDense: true,
+                        borderRadius: BorderRadius.circular(16.0),
+                        dropdownColor: Theme.of(context).colorScheme.surface,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
+                        items: [
+                          DropdownMenuItem(
+                            value: 'native',
+                            child: Text('native_android'.i18n),
+                          ),
+                          const DropdownMenuItem(
+                            value: 'hyper_os',
+                            child: Text('HyperOS'),
+                          ),
+                        ],
+                        onChanged: (v) {
+                          if (v == null) return;
+                          _haptic();
+                          settings.update(androidLiveNotificationType: v);
+                          setState(() {});
+                        },
                       ),
                     ),
                     borderRadius: const BorderRadius.vertical(
@@ -1844,43 +1758,31 @@ class SettingsScreenState extends State<SettingsScreen>
                     style: TextStyle(
                         color:
                             AppColors.of(context).text.withValues(alpha: .95))),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.55),
-                    borderRadius: BorderRadius.circular(14.0),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<Pages>(
-                      value: settings.startPage,
-                      isDense: true,
-                      borderRadius: BorderRadius.circular(18.0),
-                      dropdownColor: Theme.of(context).colorScheme.surface,
-                      icon: Icon(
-                        Icons.expand_more_rounded,
-                        size: 18.0,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      items: const [Pages.home, Pages.grades, Pages.timetable]
-                          .map((p) => DropdownMenuItem<Pages>(
-                                value: p,
-                                child: Text(
-                                    SettingsHelper.localizedPageTitles()[p]!
-                                        .capital()),
-                              ))
-                          .toList(),
-                      onChanged: (v) {
-                        if (v == null) return;
-                        _haptic();
-                        settings.update(startPage: v);
-                        setState(() {});
-                      },
+                trailing: DropdownButtonHideUnderline(
+                  child: DropdownButton<Pages>(
+                    value: settings.startPage,
+                    isDense: true,
+                    borderRadius: BorderRadius.circular(16.0),
+                    dropdownColor: Theme.of(context).colorScheme.surface,
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
+                    items: const [Pages.home, Pages.grades, Pages.timetable]
+                        .map((p) => DropdownMenuItem<Pages>(
+                              value: p,
+                              child: Text(
+                                  SettingsHelper.localizedPageTitles()[p]!
+                                      .capital()),
+                            ))
+                        .toList(),
+                    onChanged: (v) {
+                      if (v == null) return;
+                      _haptic();
+                      settings.update(startPage: v);
+                      setState(() {});
+                    },
                   ),
                 ),
                 borderRadius: const BorderRadius.all(Radius.circular(12.0)),
@@ -1909,46 +1811,34 @@ class SettingsScreenState extends State<SettingsScreen>
                     style: TextStyle(
                         color:
                             AppColors.of(context).text.withValues(alpha: .95))),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.55),
-                    borderRadius: BorderRadius.circular(14.0),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: settings.language,
-                      isDense: true,
-                      borderRadius: BorderRadius.circular(18.0),
-                      dropdownColor: Theme.of(context).colorScheme.surface,
-                      icon: Icon(
-                        Icons.expand_more_rounded,
-                        size: 18.0,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      items: SettingsHelper.langMap.entries
-                          .map((e) => DropdownMenuItem<String>(
-                                value: e.key,
-                                child: Text(e.value.trim()),
-                              ))
-                          .toList(),
-                      onChanged: (v) {
-                        if (v == null) return;
-                        _haptic();
-                        Provider.of<SettingsProvider>(context, listen: false)
-                            .update(language: v);
-                        I18n.of(context).locale = Locale(v, v.toUpperCase());
-                        if (Platform.isAndroid || Platform.isIOS) {
-                          setupQuickActions();
-                        }
-                        setState(() {});
-                      },
+                trailing: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: settings.language,
+                    isDense: true,
+                    borderRadius: BorderRadius.circular(16.0),
+                    dropdownColor: Theme.of(context).colorScheme.surface,
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
+                    items: SettingsHelper.langMap.entries
+                        .map((e) => DropdownMenuItem<String>(
+                              value: e.key,
+                              child: Text(e.value.trim()),
+                            ))
+                        .toList(),
+                    onChanged: (v) {
+                      if (v == null) return;
+                      _haptic();
+                      Provider.of<SettingsProvider>(context, listen: false)
+                          .update(language: v);
+                      I18n.of(context).locale = Locale(v, v.toUpperCase());
+                      if (Platform.isAndroid || Platform.isIOS) {
+                        setupQuickActions();
+                      }
+                      setState(() {});
+                    },
                   ),
                 ),
                 borderRadius: const BorderRadius.all(Radius.circular(12.0)),
@@ -1977,58 +1867,46 @@ class SettingsScreenState extends State<SettingsScreen>
                     style: TextStyle(
                         color:
                             AppColors.of(context).text.withValues(alpha: .95))),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.55),
-                    borderRadius: BorderRadius.circular(14.0),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<VibrationStrength>(
-                      value: settings.vibrate,
-                      isDense: true,
-                      borderRadius: BorderRadius.circular(18.0),
-                      dropdownColor: Theme.of(context).colorScheme.surface,
-                      icon: Icon(
-                        Icons.expand_more_rounded,
-                        size: 18.0,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      items: [
-                        VibrationStrength.off,
-                        VibrationStrength.light,
-                        VibrationStrength.medium,
-                        VibrationStrength.strong,
-                      ]
-                          .map((v) => DropdownMenuItem<VibrationStrength>(
-                                value: v,
-                                child: Text(SettingsHelper
-                                        .localizedVibrationTitles()[v] ??
-                                    ''),
-                              ))
-                          .toList(),
-                      onChanged: (v) {
-                        if (v == null) return;
-                        settings.update(vibrate: v);
-                        // play haptic with the newly selected strength
-                        switch (v) {
-                          case VibrationStrength.off:
-                            break;
-                          case VibrationStrength.light:
-                            HapticFeedback.selectionClick();
-                          case VibrationStrength.medium:
-                            HapticFeedback.lightImpact();
-                          case VibrationStrength.strong:
-                            HapticFeedback.mediumImpact();
-                        }
-                        setState(() {});
-                      },
+                trailing: DropdownButtonHideUnderline(
+                  child: DropdownButton<VibrationStrength>(
+                    value: settings.vibrate,
+                    isDense: true,
+                    borderRadius: BorderRadius.circular(16.0),
+                    dropdownColor: Theme.of(context).colorScheme.surface,
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
+                    items: [
+                      VibrationStrength.off,
+                      VibrationStrength.light,
+                      VibrationStrength.medium,
+                      VibrationStrength.strong,
+                    ]
+                        .map((v) => DropdownMenuItem<VibrationStrength>(
+                              value: v,
+                              child: Text(SettingsHelper
+                                      .localizedVibrationTitles()[v] ??
+                                  ''),
+                            ))
+                        .toList(),
+                    onChanged: (v) {
+                      if (v == null) return;
+                      settings.update(vibrate: v);
+                      // play haptic with the newly selected strength
+                      switch (v) {
+                        case VibrationStrength.off:
+                          break;
+                        case VibrationStrength.light:
+                          HapticFeedback.selectionClick();
+                        case VibrationStrength.medium:
+                          HapticFeedback.lightImpact();
+                        case VibrationStrength.strong:
+                          HapticFeedback.mediumImpact();
+                      }
+                      setState(() {});
+                    },
                   ),
                 ),
                 borderRadius: const BorderRadius.all(Radius.circular(12.0)),
@@ -2059,51 +1937,39 @@ class SettingsScreenState extends State<SettingsScreen>
                     style: TextStyle(
                         color:
                             AppColors.of(context).text.withValues(alpha: .95))),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.55),
-                    borderRadius: BorderRadius.circular(14.0),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<ThemeMode>(
-                      value: settings.theme,
-                      isDense: true,
-                      borderRadius: BorderRadius.circular(18.0),
-                      dropdownColor: Theme.of(context).colorScheme.surface,
-                      icon: Icon(
-                        Icons.expand_more_rounded,
-                        size: 18.0,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      items: [
-                        DropdownMenuItem(
-                          value: ThemeMode.light,
-                          child: Text('light'.i18n),
-                        ),
-                        DropdownMenuItem(
-                          value: ThemeMode.dark,
-                          child: Text('dark'.i18n),
-                        ),
-                        DropdownMenuItem(
-                          value: ThemeMode.system,
-                          child: Text('system'.i18n),
-                        ),
-                      ],
-                      onChanged: (v) {
-                        if (v == null) return;
-                        _haptic();
-                        settings.update(theme: v);
-                        Provider.of<ThemeModeObserver>(context, listen: false)
-                            .changeTheme(v);
-                        setState(() {});
-                      },
+                trailing: DropdownButtonHideUnderline(
+                  child: DropdownButton<ThemeMode>(
+                    value: settings.theme,
+                    isDense: true,
+                    borderRadius: BorderRadius.circular(16.0),
+                    dropdownColor: Theme.of(context).colorScheme.surface,
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
+                    items: [
+                      DropdownMenuItem(
+                        value: ThemeMode.light,
+                        child: Text('light'.i18n),
+                      ),
+                      DropdownMenuItem(
+                        value: ThemeMode.dark,
+                        child: Text('dark'.i18n),
+                      ),
+                      DropdownMenuItem(
+                        value: ThemeMode.system,
+                        child: Text('system'.i18n),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      if (v == null) return;
+                      _haptic();
+                      settings.update(theme: v);
+                      Provider.of<ThemeModeObserver>(context, listen: false)
+                          .changeTheme(v);
+                      setState(() {});
+                    },
                   ),
                 ),
                 borderRadius: const BorderRadius.all(Radius.circular(12.0)),
@@ -2910,20 +2776,12 @@ class _ThemeColorPicker extends StatelessWidget {
     final accentColor = Theme.of(context).colorScheme.secondary;
     final isSystem = selectedColor == null;
 
-    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(left: 24.0, right: 24.0, bottom: 14.0),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(28.0),
+        borderRadius: BorderRadius.circular(22.0),
         child: Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(28.0),
-            border: Border.all(
-              color: colorScheme.outlineVariant.withValues(alpha: 0.15),
-              width: 0.8,
-            ),
-          ),
+          color: Theme.of(context).colorScheme.surface,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2942,29 +2800,25 @@ class _ThemeColorPicker extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 16.0,
-                        height: 16.0,
+                        width: 14.0,
+                        height: 14.0,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: colorScheme.primary,
-                          border: Border.all(
-                            color: colorScheme.onSurface.withValues(alpha: 0.2),
-                            width: 1.5,
-                          ),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-                      const SizedBox(width: 8.0),
+                      const SizedBox(width: 6.0),
                       AnimatedRotation(
                         turns: isOpen ? 0.5 : 0.0,
-                        duration: const Duration(milliseconds: 220),
+                        duration: const Duration(milliseconds: 200),
                         child: Icon(Icons.keyboard_arrow_down_rounded,
-                            size: 22.0, color: textColor.withValues(alpha: .6)),
+                            size: 20.0, color: textColor.withValues(alpha: .6)),
                       ),
                     ],
                   ),
                   borderRadius: BorderRadius.vertical(
-                    top: const Radius.circular(24.0),
-                    bottom: Radius.circular(isOpen ? 8.0 : 24.0),
+                    top: const Radius.circular(18.0),
+                    bottom: Radius.circular(isOpen ? 6.0 : 18.0),
                   ),
                 ),
               ),

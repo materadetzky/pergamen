@@ -41,9 +41,9 @@ class SplittedPanel extends StatelessWidget {
       var i = 0;
 
       for (var widget in children!) {
-        final double topR = i == 0 ? 28.0 : (isSeparated ? 24.0 : 8.0);
+        final double topR = i == 0 ? 22.0 : (isSeparated ? 20.0 : 6.0);
         final double bottomR =
-            children!.length == i + 1 ? 28.0 : (isSeparated ? 24.0 : 8.0);
+            children!.length == i + 1 ? 22.0 : (isSeparated ? 20.0 : 6.0);
 
         var w = Container(
           width: double.infinity,
@@ -62,12 +62,7 @@ class SplittedPanel extends StatelessWidget {
                         .secondary
                         .withValues(alpha: .25),
                     width: 1.0)
-                : Border.all(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .outlineVariant
-                        .withValues(alpha: 0.15),
-                    width: 0.8),
+                : null,
           ),
           margin: EdgeInsets.only(top: i == 0 ? 0.0 : sp),
           padding: cardPadding ?? EdgeInsets.zero,

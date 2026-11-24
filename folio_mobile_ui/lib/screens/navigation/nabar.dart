@@ -44,26 +44,20 @@ class Navbar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Main Material 3 Expressive Floating Pill Toolbar
+            // Main Material You Floating Pill Toolbar
             Expanded(
               child: Container(
-                height: 64.0,
+                height: 62.0,
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 decoration: BoxDecoration(
                   color: pillBgColor,
-                  borderRadius: BorderRadius.circular(32.0),
-                  border: Border.all(
-                    color: colorScheme.outlineVariant
-                        .withValues(alpha: isDark ? 0.18 : 0.35),
-                    width: 1.0,
-                  ),
+                  borderRadius: BorderRadius.circular(31.0),
                   boxShadow: [
                     BoxShadow(
                       color:
-                          Colors.black.withValues(alpha: isDark ? 0.32 : 0.10),
-                      blurRadius: 24,
-                      offset: const Offset(0, 6),
-                      spreadRadius: 1,
+                          Colors.black.withValues(alpha: isDark ? 0.28 : 0.08),
+                      blurRadius: 20,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -84,7 +78,7 @@ class Navbar extends StatelessWidget {
               ),
             ),
 
-            // Separate Material 3 Expressive Squircle Action Button
+            // Separate Material You Squircle Action Button
             if (actionItem != null) ...[
               const SizedBox(width: 10.0),
               Tooltip(
@@ -96,23 +90,17 @@ class Navbar extends StatelessWidget {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 250),
                     curve: Curves.easeOutCubic,
-                    width: 58.0,
-                    height: 58.0,
+                    width: 56.0,
+                    height: 56.0,
                     decoration: BoxDecoration(
                       color: actionBgColor,
                       borderRadius: BorderRadius.circular(20.0),
-                      border: Border.all(
-                        color: colorScheme.tertiary
-                            .withValues(alpha: isDark ? 0.25 : 0.35),
-                        width: 1.0,
-                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black
-                              .withValues(alpha: isDark ? 0.30 : 0.08),
-                          blurRadius: 20,
-                          offset: const Offset(0, 6),
-                          spreadRadius: 1,
+                              .withValues(alpha: isDark ? 0.25 : 0.07),
+                          blurRadius: 18,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),

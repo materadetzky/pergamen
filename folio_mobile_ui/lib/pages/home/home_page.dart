@@ -196,15 +196,14 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         animation: _liveCardAnimation,
                         builder: (context, child) {
                           final colorScheme = Theme.of(context).colorScheme;
-                          final isDark =
-                              Theme.of(context).brightness == Brightness.dark;
                           final Color greetingColor = colorScheme.onSurface;
+                          final Color dateColor = colorScheme.onSurfaceVariant;
                           final String activeFont =
                               settings.fontFamily.isNotEmpty
                                   ? settings.fontFamily
                                   : 'Figtree';
 
-                          TextStyle expressiveStyle(TextStyle base) {
+                          TextStyle cleanStyle(TextStyle base) {
                             try {
                               return GoogleFonts.getFont(activeFont,
                                   textStyle: base);
@@ -217,21 +216,21 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               MediaQuery.of(context).padding.top;
                           final double cardContentHeight =
                               _liveCard.currentState == LiveCardState.morning
-                                  ? 304.0
+                                  ? 284.0
                                   : (_liveCard.currentState ==
                                           LiveCardState.duringLesson
                                       ? (_liveCard.currentLesson?.description
                                                   .isNotEmpty ==
                                               true
-                                          ? 334.0
-                                          : 310.0)
+                                          ? 314.0
+                                          : 290.0)
                                       : (_liveCard.currentState ==
                                               LiveCardState.duringBreak
-                                          ? 310.0
+                                          ? 290.0
                                           : (_liveCard.currentState ==
                                                   LiveCardState.summary
-                                              ? 302.0
-                                              : 220.0)));
+                                              ? 282.0
+                                              : 200.0)));
 
                           final String localeCode =
                               I18n.of(context).locale.languageCode;
@@ -249,11 +248,11 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             shape: const RoundedRectangleBorder(),
                             centerTitle: false,
                             titleSpacing: 0.0,
-                            toolbarHeight: 74.0,
-                            // Material 3 Expressive Greeting & Date Pill
+                            toolbarHeight: 64.0,
+                            // Clean Material You Greeting & Date
                             title: Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                                  const EdgeInsets.symmetric(horizontal: 24.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
@@ -265,56 +264,28 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       greeting,
                                       maxLines: 1,
                                       textAlign: TextAlign.start,
-                                      style: expressiveStyle(
+                                      style: cleanStyle(
                                         TextStyle(
                                           fontWeight: FontWeight.w800,
                                           fontSize: 28.0,
-                                          letterSpacing: -0.6,
+                                          letterSpacing: -0.5,
                                           height: 1.15,
                                           color: greetingColor,
                                         ),
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 6.0),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 11.0, vertical: 4.5),
-                                    decoration: BoxDecoration(
-                                      color: colorScheme.secondaryContainer
-                                          .withValues(
-                                              alpha: isDark ? 0.55 : 0.75),
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      border: Border.all(
-                                        color: colorScheme.outlineVariant
-                                            .withValues(alpha: 0.25),
-                                        width: 0.8,
+                                  const SizedBox(height: 2.0),
+                                  Text(
+                                    formattedDate,
+                                    textAlign: TextAlign.start,
+                                    style: cleanStyle(
+                                      TextStyle(
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.1,
+                                        color: dateColor,
                                       ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.calendar_today_rounded,
-                                          size: 13.0,
-                                          color: colorScheme.primary,
-                                        ),
-                                        const SizedBox(width: 6.0),
-                                        Text(
-                                          formattedDate,
-                                          textAlign: TextAlign.start,
-                                          style: expressiveStyle(
-                                            TextStyle(
-                                              fontSize: 12.5,
-                                              fontWeight: FontWeight.w700,
-                                              letterSpacing: 0.15,
-                                              height: 1.1,
-                                              color: colorScheme
-                                                  .onSecondaryContainer,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
                                     ),
                                   ),
                                 ],
@@ -332,10 +303,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     Theme.of(context).scaffoldBackgroundColor,
                                 child: Padding(
                                   padding: EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: paddingTop + 82.0,
-                                    bottom: 76.0,
+                                    left: 24.0,
+                                    right: 24.0,
+                                    top: paddingTop + 72.0,
+                                    bottom: 66.0,
                                   ),
                                   child: Transform.scale(
                                     scale: _liveCardAnimation.value,
@@ -549,7 +520,7 @@ class _HomeCategoryBar extends StatelessWidget implements PreferredSizeWidget {
   final void Function(int) onTap;
 
   @override
-  Size get preferredSize => const Size.fromHeight(68.0);
+  Size get preferredSize => const Size.fromHeight(58.0);
 
   static const _icons = <IconData>[
     Icons.apps_rounded,
@@ -573,7 +544,7 @@ class _HomeCategoryBar extends StatelessWidget implements PreferredSizeWidget {
     final String activeFont =
         settings.fontFamily.isNotEmpty ? settings.fontFamily : 'Figtree';
 
-    TextStyle expressiveStyle(TextStyle base) {
+    TextStyle cleanStyle(TextStyle base) {
       try {
         return GoogleFonts.getFont(activeFont, textStyle: base);
       } catch (_) {
@@ -586,103 +557,71 @@ class _HomeCategoryBar extends StatelessWidget implements PreferredSizeWidget {
       builder: (context, _) {
         final selected = tabController.index;
         final colorScheme = Theme.of(context).colorScheme;
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-
-        final Color trackBg = Color.alphaBlend(
-          colorScheme.primary.withValues(alpha: isDark ? 0.06 : 0.04),
-          colorScheme.surfaceContainerHigh,
-        );
 
         return Container(
           color: Theme.of(context).scaffoldBackgroundColor,
           height: preferredSize.height,
-          padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 8.0),
-          child: Container(
-            padding: const EdgeInsets.all(4.0),
-            decoration: BoxDecoration(
-              color: trackBg,
-              borderRadius: BorderRadius.circular(26.0),
-              border: Border.all(
-                color: colorScheme.outlineVariant
-                    .withValues(alpha: isDark ? 0.18 : 0.32),
-                width: 1.0,
-              ),
-            ),
-            child: Row(
-              children: List.generate(5, (i) {
-                final isSelected = i == selected;
-                return Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => onTap(i),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 240),
-                      curve: Curves.easeOutCubic,
-                      margin: const EdgeInsets.symmetric(horizontal: 1.5),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 4.0, vertical: 4.0),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? colorScheme.secondaryContainer
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(22.0),
-                        border: isSelected
-                            ? Border.all(
-                                color: colorScheme.secondary
-                                    .withValues(alpha: 0.30),
-                                width: 1.0,
-                              )
-                            : null,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AnimatedScale(
-                            scale: isSelected ? 1.08 : 1.0,
-                            duration: const Duration(milliseconds: 220),
-                            curve: Curves.easeOutBack,
-                            child: Icon(
-                              _icons[i],
-                              size: 19.5,
-                              color: isSelected
-                                  ? colorScheme.onSecondaryContainer
-                                  : colorScheme.onSurfaceVariant
-                                      .withValues(alpha: 0.85),
-                            ),
-                          ),
-                          const SizedBox(height: 2.5),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 2.0),
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                labels[i],
-                                maxLines: 1,
-                                style: expressiveStyle(
-                                  TextStyle(
-                                    fontSize: 11.5,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w800
-                                        : FontWeight.w600,
-                                    letterSpacing: -0.15,
-                                    height: 1.1,
-                                    color: isSelected
-                                        ? colorScheme.onSecondaryContainer
-                                        : colorScheme.onSurfaceVariant
-                                            .withValues(alpha: 0.85),
-                                  ),
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 5.0),
+          child: Row(
+            children: List.generate(5, (i) {
+              final isSelected = i == selected;
+              return Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => onTap(i),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOutCubic,
+                    margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 4.0, vertical: 4.0),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? colorScheme.secondaryContainer
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _icons[i],
+                          size: 20.0,
+                          color: isSelected
+                              ? colorScheme.onSecondaryContainer
+                              : colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.75),
+                        ),
+                        const SizedBox(height: 2.5),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              labels[i],
+                              maxLines: 1,
+                              style: cleanStyle(
+                                TextStyle(
+                                  fontSize: 11.5,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w700
+                                      : FontWeight.w600,
+                                  letterSpacing: -0.1,
+                                  color: isSelected
+                                      ? colorScheme.onSecondaryContainer
+                                      : colorScheme.onSurfaceVariant
+                                          .withValues(alpha: 0.75),
                                 ),
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              }),
-            ),
+                ),
+              );
+            }),
           ),
         );
       },
