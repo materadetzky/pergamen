@@ -1,9 +1,9 @@
 {
-  "id": "update_v1_2_17",
+  "id": "update_v1_2_18",
   "enabled": true,
   "title": "🎉 Új Pergamen verzió elérhető!",
-  "message": "Megjelent a Pergamen v1.2.17!\n\n• Vadonatúj Material 3 Expressive lebegő navigációs menü (csak ikonokkal)\n• Különálló gyorsmenü gomb és simább animációk\n• Hibajavítások és teljesítményoptimalizálás",
-  "tag": "v1.2.17 BETA",
+  "message": "Megjelent a Pergamen v1.2.18!\n\n• Vadonatúj Material 3 Expressive Beállítások (Settings) menü és Navigációs sáv\n• Kifejező kártyák, szekció-kapszulák, új csúszkák és színválasztók\n• Hibajavítások és teljesítményoptimalizálás",
+  "tag": "v1.2.18",
   "platform": "all",
   "force_update": false,
   "buttons": [

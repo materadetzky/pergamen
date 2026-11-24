@@ -41,6 +41,10 @@ class SplittedPanel extends StatelessWidget {
       var i = 0;
 
       for (var widget in children!) {
+        final double topR = i == 0 ? 28.0 : (isSeparated ? 24.0 : 8.0);
+        final double bottomR =
+            children!.length == i + 1 ? 28.0 : (isSeparated ? 24.0 : 8.0);
+
         var w = Container(
           width: double.infinity,
           decoration: BoxDecoration(
@@ -48,8 +52,8 @@ class SplittedPanel extends StatelessWidget {
                 ? Colors.transparent
                 : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.vertical(
-              top: Radius.circular(i == 0 ? 16.0 : 8.0),
-              bottom: Radius.circular(children!.length == i + 1 ? 16.0 : 8.0),
+              top: Radius.circular(topR),
+              bottom: Radius.circular(bottomR),
             ),
             border: hasBorder
                 ? Border.all(
@@ -58,7 +62,12 @@ class SplittedPanel extends StatelessWidget {
                         .secondary
                         .withValues(alpha: .25),
                     width: 1.0)
-                : null,
+                : Border.all(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .outlineVariant
+                        .withValues(alpha: 0.15),
+                    width: 0.8),
           ),
           margin: EdgeInsets.only(top: i == 0 ? 0.0 : sp),
           padding: cardPadding ?? EdgeInsets.zero,

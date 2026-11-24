@@ -37,15 +37,22 @@ class MenuAppIcon extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            currentOption.name,
-            style: TextStyle(
-              fontSize: 13.5,
-              color: AppColors.of(context).text.withValues(alpha: 0.65),
-              fontWeight: FontWeight.w500,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.55),
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Text(
+              currentOption.name,
+              style: TextStyle(
+                fontSize: 12.5,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
-          const SizedBox(width: 4.0),
+          const SizedBox(width: 6.0),
           Icon(
             Icons.keyboard_arrow_right_rounded,
             size: 22.0,

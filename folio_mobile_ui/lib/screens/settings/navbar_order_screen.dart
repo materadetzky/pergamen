@@ -186,7 +186,7 @@ class _NavbarOrderSheetState extends State<_NavbarOrderSheet> {
           Container(
             decoration: BoxDecoration(
               color: colorScheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(18.0),
+              borderRadius: BorderRadius.circular(24.0),
             ),
             child: ReorderableListView.builder(
               shrinkWrap: true,

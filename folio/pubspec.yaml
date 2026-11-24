@@ -3,7 +3,7 @@ description: "Egy nem hivatalos e-KRÉTA kliens, diákoktól diákoknak."
 homepage: https://folio.zan1456.dev
 publish_to: "none"
 
-version: 1.2.17+48
+version: 1.2.18+49
 
 environment:
   sdk: ^3.6.0
