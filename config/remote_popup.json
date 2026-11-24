@@ -1,9 +1,9 @@
 {
-  "id": "update_v1_2_16",
+  "id": "update_v1_2_17",
   "enabled": true,
   "title": "🎉 Új Pergamen verzió elérhető!",
-  "message": "Megjelent a Pergamen v1.2.16!\n\n• Új távoli értesítések és in-app pop-up rendszer\n• Javított kezdőképernyő ikonváltás iOS és Android rendszereken\n• Hibajavítások és sebességoptimalizálás",
-  "tag": "v1.2.16 BETA",
+  "message": "Megjelent a Pergamen v1.2.17!\n\n• Vadonatúj Material 3 Expressive lebegő navigációs menü (csak ikonokkal)\n• Különálló gyorsmenü gomb és simább animációk\n• Hibajavítások és teljesítményoptimalizálás",
+  "tag": "v1.2.17 BETA",
   "platform": "all",
   "force_update": false,
   "buttons": [

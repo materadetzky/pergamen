@@ -274,7 +274,7 @@ class NavigationScreenState extends State<NavigationScreen>
                     role: user.role,
                     profilePictureString: user.picture,
                     gradeStreak: (user.gradeStreak ?? 0) > 1,
-                    radius: 12.0,
+                    radius: 13.5,
                   ),
                   activeIcon: ProfileImage(
                     name: navFirstName,
@@ -283,7 +283,7 @@ class NavigationScreenState extends State<NavigationScreen>
                     role: user.role,
                     profilePictureString: user.picture,
                     gradeStreak: (user.gradeStreak ?? 0) > 1,
-                    radius: 12.0,
+                    radius: 13.5,
                   ),
                 ),
               ],

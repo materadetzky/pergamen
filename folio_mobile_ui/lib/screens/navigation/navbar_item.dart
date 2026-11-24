@@ -29,66 +29,45 @@ class NavbarItem extends StatelessWidget {
     final activeColor = colorScheme.onSecondaryContainer;
     final inactiveColor = colorScheme.onSurfaceVariant;
 
-    final double pillWidth =
-        itemsCount >= 6 ? 48.0 : (itemsCount >= 5 ? 52.0 : 56.0);
-    final double iconSize = itemsCount >= 6 ? 22.0 : 24.0;
-    final double fontSize = itemsCount >= 6 ? 10.5 : 11.5;
+    final double circleSize = itemsCount >= 5 ? 44.0 : 48.0;
+    final double iconSize = itemsCount >= 5 ? 22.0 : 24.0;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.fastOutSlowIn,
-            width: pillWidth,
-            height: 32.0,
+    return Tooltip(
+      message: item.title,
+      waitDuration: const Duration(milliseconds: 500),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: Center(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 280),
+            curve: Curves.easeOutCubic,
+            width: circleSize,
+            height: circleSize,
             decoration: BoxDecoration(
               color: active
                   ? colorScheme.secondaryContainer
                   : Colors.transparent,
-              borderRadius: BorderRadius.circular(16.0),
+              shape: BoxShape.circle,
             ),
             child: Center(
-              child: IconTheme(
-                data: IconThemeData(
-                  color: active ? activeColor : inactiveColor,
-                  size: iconSize,
-                ),
-                child: active ? item.activeIcon : item.icon,
-              ),
-            ),
-          ),
-          const SizedBox(height: 3.0),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2.0),
-            child: AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.fastOutSlowIn,
-              style: TextStyle(
-                fontSize: fontSize,
-                fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                letterSpacing: itemsCount >= 6 ? 0.0 : 0.1,
-                color: active
-                    ? colorScheme.onSurface
-                    : colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
-              ),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.center,
-                child: Text(
-                  item.title,
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
+              child: AnimatedScale(
+                scale: active ? 1.05 : 1.0,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOutBack,
+                child: IconTheme(
+                  data: IconThemeData(
+                    color: active ? activeColor : inactiveColor,
+                    size: iconSize,
+                  ),
+                  child: active ? item.activeIcon : item.icon,
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 }
+

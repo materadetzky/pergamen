@@ -12,6 +12,9 @@ on:
       - 'LICENSE'
       - '.gitignore'
 
+permissions:
+  contents: write
+
 jobs:
   build-ios:
     name: Build iOS IPA
@@ -83,7 +86,7 @@ jobs:
           codesign --force --verify --verbose --sign - build-ipa-standard/Payload/Runner.app
 
           cd build-ipa-standard
-          zip -qry -9 ../output/Pergamen-1.2.16-BETA.ipa Payload
+          zip -qry -9 ../output/Pergamen-1.2.17.ipa Payload
           cd ..
 
           # -------------------------------------------------------------
@@ -107,7 +110,7 @@ jobs:
           codesign --force --verify --verbose --sign - build-ipa-full/Payload/Runner.app
 
           cd build-ipa-full
-          zip -qry -9 ../output/Pergamen-1.2.16-BETA-TrollStore.ipa Payload
+          zip -qry -9 ../output/Pergamen-1.2.17-TrollStore.ipa Payload
           cd ..
 
           ls -lh output/
@@ -115,7 +118,7 @@ jobs:
       - name: Upload IPA Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Pergamen-1.2.16-BETA-iOS
+          name: Pergamen-1.2.17-iOS
           path: output/*.ipa
           retention-days: 14
 
@@ -185,11 +188,56 @@ jobs:
           cd folio
           flutter build apk --release --flavor github
           mkdir -p ../output-apk
-          cp build/app/outputs/flutter-apk/app-github-release.apk ../output-apk/Pergamen-1.2.16-BETA.apk
+          cp build/app/outputs/flutter-apk/app-github-release.apk ../output-apk/Pergamen-1.2.17.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Pergamen-1.2.16-BETA-Android
-          path: output-apk/Pergamen-1.2.16-BETA.apk
+          name: Pergamen-1.2.17-Android
+          path: output-apk/Pergamen-1.2.17.apk
           retention-days: 14
+
+  create-release:
+    name: Create Normal GitHub Release
+    needs: [build-android, build-ios]
+    if: always() && needs.build-android.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Android APK Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Pergamen-1.2.17-Android
+          path: release-assets/
+
+      - name: Download iOS IPA Artifacts
+        if: needs.build-ios.result == 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: Pergamen-1.2.17-iOS
+          path: release-assets/
+
+      - name: List Release Assets
+        run: ls -lh release-assets/
+
+      - name: Create or Update Normal GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v1.2.17"
+          TITLE="Pergamen v1.2.17"
+          NOTES="## ✨ Újdonságok a Pergamen v1.2.17 kiadásban
+
+          - 🎨 **Material 3 Expressive Navigációs Menü**: Vadonatúj, letisztult, kizárólag ikonokat tartalmazó lebegő kapszula menü (szövegek nélkül), különálló lekerekített gyorsmenü gombbal és sima animációkkal.
+          - 📱 **Android & iOS**: Telepíthető APK és Sideload / TrollStore IPA csomagok."
+
+          if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release upload "$TAG" release-assets/* --clobber --repo "${{ github.repository }}"
+            gh release edit "$TAG" --title "$TITLE" --notes "$NOTES" --prerelease=false --latest --repo "${{ github.repository }}"
+          else
+            gh release create "$TAG" release-assets/* --title "$TITLE" --notes "$NOTES" --prerelease=false --latest --repo "${{ github.repository }}"
+          fi
+
