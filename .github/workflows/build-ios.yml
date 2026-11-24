@@ -91,7 +91,7 @@ jobs:
           codesign --force --verify --verbose --sign - build-ipa-standard/Payload/Runner.app
 
           cd build-ipa-standard
-          zip -qry -9 ../output/Pergamen-1.2.20.ipa Payload
+          zip -qry -9 ../output/Pergamen-1.2.21.ipa Payload
           cd ..
 
           # -------------------------------------------------------------
@@ -115,7 +115,7 @@ jobs:
           codesign --force --verify --verbose --sign - build-ipa-full/Payload/Runner.app
 
           cd build-ipa-full
-          zip -qry -9 ../output/Pergamen-1.2.20-TrollStore.ipa Payload
+          zip -qry -9 ../output/Pergamen-1.2.21-TrollStore.ipa Payload
           cd ..
 
           ls -lh output/
@@ -123,7 +123,7 @@ jobs:
       - name: Upload IPA Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Pergamen-1.2.20-iOS
+          name: Pergamen-1.2.21-iOS
           path: output/*.ipa
           retention-days: 14
 
@@ -194,13 +194,13 @@ jobs:
           cd folio
           flutter build apk --release --flavor github
           mkdir -p ../output-apk
-          cp build/app/outputs/flutter-apk/app-github-release.apk ../output-apk/Pergamen-1.2.20.apk
+          cp build/app/outputs/flutter-apk/app-github-release.apk ../output-apk/Pergamen-1.2.21.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Pergamen-1.2.20-Android
-          path: output-apk/Pergamen-1.2.20.apk
+          name: Pergamen-1.2.21-Android
+          path: output-apk/Pergamen-1.2.21.apk
           retention-days: 14
 
   create-release:
@@ -215,7 +215,7 @@ jobs:
       - name: Download Android APK Artifact
         uses: actions/download-artifact@v4
         with:
-          name: Pergamen-1.2.20-Android
+          name: Pergamen-1.2.21-Android
           path: release-assets/
 
       - name: Download iOS IPA Artifacts
@@ -223,7 +223,7 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          name: Pergamen-1.2.20-iOS
+          name: Pergamen-1.2.21-iOS
           path: release-assets/
 
       - name: List Release Assets
@@ -233,12 +233,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v1.2.20"
-          TITLE="Pergamen v1.2.20"
-          NOTES="## ✨ Újdonságok a Pergamen v1.2.20 kiadásban
+          TAG="v1.2.21"
+          TITLE="Pergamen v1.2.21"
+          NOTES="## ✨ Újdonságok a Pergamen v1.2.21 kiadásban
 
-          - 🎨 **Letisztult Material You Dizájn**: Egyszerűbb, szellősebb és átláthatóbb Material You felület a Beállításokban, a Kezdőlapon és az alsó Navigációs sávon — felesleges keretek és túlzsúfolt dobozok nélkül.
-          - 🏠 **Kezdőlap (Home)**: Tiszta köszöntő és dátum tipográfia, valamint letisztult kategória-választó gombok (Összes, Jegyek, Számonkérések, Üzenetek, Hiányzások).
+          - ⚙️ **Egységesített Material You Beállítások (Settings)**: Minden kategória (Általános, Megjelenés, Jegyek, Értesítések, Egyéb, Névjegy) egyetlen összefüggő, szegmentált Material You kártyacsoportba rendezve, teljesen egységes ikon-, szöveg- és vezérlőstílussal, felesleges keretek nélkül.
+          - 🏠 **Kezdőlap & Navigáció**: Tiszta köszöntő és dátum tipográfia, kategória-választó gombok és ikonos lebegő navigációs sáv.
           - 📱 **Android & iOS**: Telepíthető APK és Sideload / TrollStore IPA csomagok."
 
           if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then

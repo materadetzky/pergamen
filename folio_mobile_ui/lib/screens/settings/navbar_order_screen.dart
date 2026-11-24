@@ -30,16 +30,21 @@ class MenuNavbarOrder extends StatelessWidget {
         showHandle: true,
         child: const _NavbarOrderSheet(),
       ),
-      title: Text(_s("navbar_order")),
+      title: Text(
+        _s("navbar_order"),
+        style: TextStyle(
+          color: AppColors.of(context).text.withValues(alpha: 0.95),
+        ),
+      ),
       leading: Icon(
         Icons.view_list_rounded,
         size: 22.0,
-        color: AppColors.of(context).text.withValues(alpha: 0.95),
+        color: AppColors.of(context).text.withValues(alpha: 0.85),
       ),
       trailing: Icon(
         Icons.keyboard_arrow_right_rounded,
-        size: 22.0,
-        color: AppColors.of(context).text.withValues(alpha: 0.95),
+        size: 20.0,
+        color: AppColors.of(context).text.withValues(alpha: 0.55),
       ),
       borderRadius: borderRadius,
     );

@@ -48,7 +48,8 @@ class PanelButton extends StatelessWidget {
             ? Theme(
                 data: Theme.of(context).copyWith(
                     iconTheme: IconThemeData(
-                        color: colorScheme.primary, size: 22.0)),
+                        color: AppColors.of(context).text.withValues(alpha: 0.85),
+                        size: 22.0)),
                 child: leading!,
               )
             : null,

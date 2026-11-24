@@ -27,11 +27,16 @@ class MenuAppIcon extends StatelessWidget {
       onPressed: () => Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(builder: (context) => const AppIconScreen()),
       ),
-      title: const Text("Alkalmazásikon"),
+      title: Text(
+        "Alkalmazásikon",
+        style: TextStyle(
+          color: AppColors.of(context).text.withValues(alpha: 0.95),
+        ),
+      ),
       leading: AppIconWidget(
         option: currentOption,
-        size: 26.0,
-        borderRadius: 7.0,
+        size: 24.0,
+        borderRadius: 6.5,
         showShadow: false,
       ),
       trailing: Row(
@@ -40,16 +45,16 @@ class MenuAppIcon extends StatelessWidget {
           Text(
             currentOption.name,
             style: TextStyle(
-              fontSize: 13.5,
-              color: Theme.of(context).colorScheme.primary,
+              fontSize: 14.0,
+              color: AppColors.of(context).text.withValues(alpha: 0.7),
               fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(width: 4.0),
           Icon(
             Icons.keyboard_arrow_right_rounded,
-            size: 22.0,
-            color: AppColors.of(context).text.withValues(alpha: 0.95),
+            size: 20.0,
+            color: AppColors.of(context).text.withValues(alpha: 0.55),
           ),
         ],
       ),
